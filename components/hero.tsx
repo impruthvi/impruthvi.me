@@ -11,14 +11,15 @@ export function Hero() {
       <div className="flex flex-col items-start gap-10 md:flex-row md:items-center md:gap-16">
         {/* Photo */}
         <div className="shrink-0">
-          <Image
-            src="/images/authors/impruthvi.jpg"
-            alt={SITE.name}
-            width={200}
-            height={200}
-            priority
-            className="rounded-full border-2 border-border"
-          />
+          <div className="relative h-[200px] w-[200px] overflow-hidden rounded-full border-2 border-border">
+            <Image
+              src="/images/authors/impruthvi.jpg"
+              alt={SITE.name}
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
         </div>
 
         {/* Content */}
