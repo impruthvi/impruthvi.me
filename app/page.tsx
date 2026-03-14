@@ -7,12 +7,19 @@ import { FeaturedPosts } from '@/components/featured-posts'
 import { Education } from '@/components/education'
 import { CtaBanner } from '@/components/cta-banner'
 import { getCaseStudies } from '@/actions/case-studies'
+import { getPersonSchema, getWebSiteSchema } from '@/lib/structured-data'
 
 export default async function Home() {
   const caseStudies = await getCaseStudies()
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([getPersonSchema(), getWebSiteSchema()]),
+        }}
+      />
       <Hero />
       <OpenSourceSection />
 
