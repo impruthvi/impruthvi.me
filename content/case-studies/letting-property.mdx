@@ -1,0 +1,68 @@
+---
+title: "Letting a Property"
+tagline: "Property platform with geo-search, Stripe, and Open Banking integration"
+category: "Property"
+period: "Jun 2024 – Present"
+role: "Full-Stack Developer"
+metrics:
+  - label: "Search Capability"
+    value: "Geo-location"
+  - label: "Payment APIs"
+    value: "3 Integrated"
+  - label: "User Roles"
+    value: "3 (RBAC)"
+techStack:
+  - Laravel
+  - PostgreSQL
+  - Redis
+  - AWS (EC2, S3)
+  - Stripe API
+  - Open Banking API
+  - Filament
+publishedAt: "2024-06-01"
+---
+
+## The Challenge
+
+A UK-based property letting platform needed to handle the full rental lifecycle —
+from property search to payment processing — with compliance for Open Banking
+regulations and support for multiple user roles (Landlords, Tenants, Admins).
+
+## My Role
+
+Full-stack developer responsible for:
+- Advanced property search with PostGIS geo-location queries
+- Payment integration (Stripe, Open Banking, Direct Banking)
+- Multi-role authorization system with Laravel Sanctum
+- Admin panel with Filament
+
+## Technical Highlights
+
+### Geo-Location Property Search
+Built advanced property search using PostgreSQL PostGIS extension:
+- Radius-based searches ("properties within 5km of this location")
+- Availability filters with paginated listing APIs
+- Supporting thousands of concurrent searches
+
+### Triple Payment Integration
+Integrated three payment methods:
+- **Stripe** for card payments
+- **Open Banking API** for direct bank transfers
+- **Direct Banking API** as fallback
+
+All payments use webhook signature verification and idempotent
+Laravel Queue workers to ensure zero double-charges.
+
+### Multi-Role RBAC
+Implemented with Laravel Sanctum:
+- **Landlords:** Property management, tenant screening, payment tracking
+- **Tenants:** Property search, applications, rent payments
+- **Admins:** Platform oversight, dispute resolution
+- Plus: in-app messaging, reviews, and notification pipelines
+
+## Key Results
+
+- Advanced geo-search handling thousands of concurrent queries
+- Secure payment processing across 3 payment providers
+- Complete RBAC system with in-app messaging and notifications
+- Active, ongoing production system

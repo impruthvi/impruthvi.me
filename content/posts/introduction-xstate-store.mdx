@@ -1,0 +1,161 @@
+---
+title: Exploring XState Store for State Management
+summary: Dive into the capabilities of XState Store, a state management solution
+  combining the best of Redux Toolkit and Zustand.
+image: /images/posts/introduction-xstate-store.webp
+author: 'Pruthvisinh Rajput'
+publishedAt: '2024-12-26'
+---
+
+State management plays a crucial role in building dynamic and scalable
+applications. While libraries like Zustand and Redux Toolkit have been popular
+choices, a new contender, **XState Store**, is making waves in the React and
+Next.js ecosystem. In this blog, we’ll explore how XState Store simplifies state
+management while offering robust features for type safety and scalability.
+
+---
+
+## The Challenge
+
+State management in modern applications often involves balancing simplicity and
+scalability. Common challenges include:
+
+- Managing local and global state consistently.
+- Maintaining type safety, especially in TypeScript-heavy projects.
+- Ensuring state transitions are predictable and descriptive.
+- Adapting to growing application complexity.
+
+---
+
+## The Solution: XState Store
+
+XState Store introduces an event-driven approach to state management, blending
+the simplicity of Zustand with the structured design of Redux Toolkit. This
+makes it ideal for developers seeking a balance between flexibility and
+maintainability.
+
+---
+
+## The Code
+
+Below is an example of how to set up a store using `xstate/store` and integrate
+it into your application:
+
+```tsx
+import { createStore } from '@xstate/store'
+import { useSelector } from '@xstate/store/react'
+
+const store = createStore({
+  // context
+  context: {
+    bears: 0,
+    fish: 0
+  },
+  // transitions
+  on: {
+    increasePopulation: {
+      bears: (context, event: { by: number }) => context.bears + event.by
+    },
+    eatFish: {
+      fish: context => context.fish - 1
+    },
+    removeAllBears: {
+      bears: 0
+    }
+  }
+})
+
+export const useBears = () => useSelector(store, state => state.context.bears)
+export const useFish = () => useSelector(store, state => state.context.fish)
+```
+
+In xstate/store, the createStore function serves as the core API. It organizes
+the store into two parts: context (the state) and transitions (similar to
+actions).
+
+At first glance, this setup might seem only slightly different from Zustand. But
+let me share what makes it so intriguing:
+
+---
+
+## Why This Approach Works
+
+### 1. TypeScript Support
+
+XState Store offers seamless TypeScript integration, inferring types directly
+from the initial context. This reduces boilerplate and ensures strong type
+safety, making it easier to work with in TypeScript-heavy projects.
+
+In the example above, the only manual typing required is for the event passed to
+the `increasePopulation` transition. This simplicity aligns well with the
+principle that user-land TypeScript should resemble plain JavaScript as much as
+possible.
+
+### 2. Event-Driven Transitions
+
+State updates are triggered by events, which are more predictable and
+descriptive than traditional setters. This approach ensures a clear separation
+between the UI and the business logic, enhancing maintainability and
+readability.
+
+### 3. Selector-Based Subscription
+
+Using `useSelector`, you can efficiently subscribe to specific parts of the
+state. This minimizes unnecessary re-renders, optimizing performance and keeping
+components focused on their relevant data.
+
+### 4. Framework Agnostic
+
+The core API of XState Store is framework-agnostic, allowing flexibility in its
+usage. A dedicated React adapter simplifies integration, making it easy to use
+within React projects while keeping the core logic decoupled.
+
+### 5. Scalability and Flexibility
+
+As your application grows in complexity, XState Store provides a seamless
+upgrade path to full state machines. This feature future-proofs your state
+management solution, making it adaptable to evolving requirements in larger
+projects.
+
+---
+
+## Using XState Store
+
+Here’s how you can integrate XState Store in your React components:
+
+```tsx
+function App() {
+  const bears = useBears()
+
+  const handleIncrement = () => {
+    store.send({ type: 'increasePopulation', by: 10 })
+  }
+
+  return (
+    <div>
+      Bears: {bears}
+      <button onClick={handleIncrement}>Increase Population</button>
+    </div>
+  )
+}
+```
+
+---
+
+## Conclusion
+
+XState Store offers a fresh perspective on state management by combining the
+best features of Zustand and Redux Toolkit. Its clean API, robust TypeScript
+support, and event-driven architecture make it a strong candidate for modern
+React and Next.js applications.
+
+If you’re looking to simplify state management while preparing for future
+complexity, give XState Store a try. Feel free to explore its [official documentation](https://stately.ai/docs/xstate-store) for more details.
+
+---
+
+## Happy coding! 🚀
+
+**Note:** This blog assumes familiarity with Zustand and Redux Toolkit. For
+beginners, consider reviewing those libraries to better understand the context
+of XState Store.

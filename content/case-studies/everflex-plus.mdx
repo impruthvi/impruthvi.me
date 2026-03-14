@@ -1,0 +1,109 @@
+---
+title: "Everflex Plus"
+tagline: "Healthcare SaaS serving 3,000+ patients with 95% test coverage"
+category: "Healthcare"
+period: "Jan 2023 – Sep 2023"
+role: "Full-Stack Developer"
+metrics:
+  - label: "Patients Served"
+    value: "3,000+"
+  - label: "API Speedup"
+    value: "800ms → 440ms"
+  - label: "Test Coverage"
+    value: "95%"
+  - label: "Therapists"
+    value: "500+"
+techStack:
+  - Laravel
+  - React
+  - Inertia.js
+  - MySQL
+  - AWS EC2
+  - Redis
+  - Laravel Sanctum
+  - Horizon
+  - Supervisor
+  - Pest
+  - Cypress
+publishedAt: "2023-09-01"
+---
+
+## The Challenge
+
+Everflex Plus needed a platform where therapists could manage patient rehabilitation
+programs, track progress, and communicate — all while meeting healthcare compliance
+requirements. The existing system was slow (800ms+ API responses) and had no
+automated testing, making deployments risky.
+
+## My Role
+
+I was the primary backend developer, responsible for:
+- API architecture and database schema design
+- Performance optimization (the 800ms → 440ms story)
+- Test suite implementation (0% → 95% coverage)
+- Background job infrastructure (Horizon + Supervisor)
+- Deployment pipeline on AWS EC2
+
+## Technical Decisions
+
+**Why Laravel?** The team had PHP expertise, and Laravel's ecosystem (Sanctum for
+auth, Horizon for queues, Eloquent for ORM) meant we could move fast without
+building infrastructure from scratch.
+
+**Why Inertia.js + React?** We needed a reactive frontend but couldn't afford the
+complexity of a fully decoupled SPA. Inertia gave us React components with
+Laravel's routing and auth — the best of both worlds.
+
+**Why Redis?** Two reasons:
+1. Queue backend for Horizon (email workflows, notifications)
+2. Query caching for frequently-accessed patient lists
+
+## The Performance Story
+
+The original API responded in ~800ms for the core "patient list" endpoint.
+I profiled and found three issues:
+
+1. **N+1 queries:** The patient list loaded related therapists, programs,
+   and sessions without eager loading. Fixed with `->with(['therapist', 'programs.sessions'])`.
+
+2. **Missing indexes:** The `patients` table had no composite index on
+   `(therapist_id, status)`. Added MySQL composite index.
+
+3. **No caching:** The therapist dashboard hit the database on every page load.
+   Added Redis cache with 5-minute TTL for dashboard aggregates.
+
+Result: **800ms → 440ms** (45% reduction). The dashboard endpoint dropped to ~120ms
+with cache hits.
+
+## Background Job Architecture
+
+```
+  Request ──▶ Controller ──▶ Dispatch Job ──▶ Redis Queue
+                                                   │
+                                           ┌───────┴───────┐
+                                           ▼               ▼
+                                    Email Worker    Notification Worker
+                                    (Horizon)       (Horizon)
+                                           │               │
+                                           ▼               ▼
+                                    Resend API      Database + Push
+```
+
+Implemented event-driven job processing with Laravel Horizon and Supervisor:
+- Automated email workflows (appointment reminders, progress reports)
+- Real-time notifications for therapists when patients complete sessions
+- Result: 30% increase in user engagement
+
+## Testing Strategy
+
+Went from 0% to 95% test coverage:
+- **Pest** for unit and feature tests (API endpoints, model relationships, services)
+- **Cypress** for E2E tests (patient registration flow, therapist dashboard)
+- Every PR required passing tests before merge
+
+## Key Results
+
+- Served **3,000+ patients** and **500+ therapists** with secure, role-based access
+- Reduced API response times from **800ms to 440ms** (45% improvement)
+- Achieved **95% test coverage**, enabling confident production deploys
+- Implemented event-driven background jobs that increased engagement by **30%**

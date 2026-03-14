@@ -1,0 +1,64 @@
+---
+title: "Fleet Mart"
+tagline: "E-commerce platform that reduced fraud by 90% with multi-tier approvals"
+category: "E-commerce"
+period: "Nov 2021 – Feb 2022"
+role: "Backend Developer"
+metrics:
+  - label: "Users"
+    value: "500+"
+  - label: "Fraud Reduction"
+    value: "90%"
+  - label: "Auth"
+    value: "JWT"
+techStack:
+  - Laravel
+  - jQuery
+  - MySQL
+  - Razorpay API
+  - Bootstrap
+  - JWT
+publishedAt: "2022-02-01"
+---
+
+## The Challenge
+
+Fleet Mart needed a B2B e-commerce platform with strict order approval workflows
+to prevent fraudulent purchases — a significant problem with their previous system.
+
+## My Role
+
+Backend developer responsible for:
+- Laravel REST API architecture
+- JWT authentication system
+- Multi-tier approval workflow engine
+- Razorpay payment gateway integration
+
+## Technical Highlights
+
+### Multi-Tier Approval Workflow
+Designed a state-machine-based approval system:
+```
+  Order Created → Manager Review → Finance Approval → Payment → Fulfilled
+       │              │                  │
+       ▼              ▼                  ▼
+    Cancelled      Rejected           Rejected
+```
+
+Each tier has role-based access, email notifications, and audit logging.
+
+### Fraud Prevention
+The multi-tier approval system, combined with JWT authentication
+and audit trails, reduced fraudulent orders by 90%.
+
+### Payment Integration
+- Razorpay API for Indian payment methods (UPI, cards, netbanking)
+- Webhook signature verification for payment confirmations
+- Idempotent processing to prevent double charges
+
+## Key Results
+
+- Served **500+ users** on the platform
+- Reduced fraud by **90%** through multi-tier approvals
+- Reliable payment processing via Razorpay
+- Full audit trail for compliance
