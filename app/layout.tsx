@@ -38,7 +38,12 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: SITE.title,
     description: SITE.description,
-    creator: '@aspect_developer',
+    creator: '@impruthvi13',
+  },
+  alternates: {
+    types: {
+      'application/rss+xml': `${SITE.url}/rss.xml`,
+    },
   },
   robots: {
     index: true,

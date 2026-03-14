@@ -1,11 +1,12 @@
 import Link from 'next/link'
-import { Github, Linkedin, Twitter } from 'lucide-react'
+import { Github, Linkedin, Twitter, Rss } from 'lucide-react'
 import { SITE } from '@/lib/constants'
 
 const socialLinks = [
   { href: SITE.social.github, icon: Github, label: 'GitHub' },
   { href: SITE.social.linkedin, icon: Linkedin, label: 'LinkedIn' },
   { href: SITE.social.twitter, icon: Twitter, label: 'X (Twitter)' },
+  { href: '/rss.xml', icon: Rss, label: 'RSS Feed' },
 ]
 
 export function Footer() {
