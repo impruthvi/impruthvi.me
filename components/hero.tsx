@@ -29,9 +29,9 @@ export function Hero() {
           </h1>
           <p className="mt-1 text-lg text-laravel">Laravel Developer</p>
           <p className="mt-4 max-w-xl text-muted-foreground">
-            Laravel developer who shipped a healthcare SaaS to 3,000+ patients,
-            reduced API response times by 45%, and had a PR merged by Taylor
-            Otwell.
+            Laravel developer who builds full-stack apps with React, Vue, and
+            AWS. Shipped a healthcare SaaS to 3,000+ patients, reduced API
+            response times by 45%, and had a PR merged by Taylor Otwell.
           </p>
 
           {/* CTAs */}
