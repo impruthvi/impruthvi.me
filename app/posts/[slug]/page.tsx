@@ -62,7 +62,7 @@ export default async function PostPage({ params }: PostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      <article className="mx-auto max-w-5xl px-6 py-16 md:py-24">
+      <article className="mx-auto max-w-5xl px-6 py-12 md:py-16">
         <Breadcrumbs
           items={[
             { label: 'Blog', href: '/posts' },

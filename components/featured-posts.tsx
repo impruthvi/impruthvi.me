@@ -9,7 +9,7 @@ export async function FeaturedPosts() {
   if (posts.length === 0) return null
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-16 md:py-24">
+    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
       <div className="flex items-baseline justify-between">
         <div>
           <h2 className="font-mono text-2xl font-bold tracking-tight">

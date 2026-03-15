@@ -2,7 +2,7 @@ import { skillsData } from '@/lib/skills-data'
 
 export function Skills() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-16 md:py-24">
+    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
       <h2 className="font-mono text-2xl font-bold tracking-tight">
         Technical Skills
       </h2>

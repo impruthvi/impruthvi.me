@@ -7,7 +7,7 @@ import { MetricCard } from '@/components/metric-card'
 
 export function Hero() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-16 md:py-24">
+    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
       <div className="flex flex-col items-start gap-10 md:flex-row md:items-center md:gap-16">
         {/* Photo */}
         <div className="shrink-0">

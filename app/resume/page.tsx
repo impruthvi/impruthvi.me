@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function ResumePage() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-16 md:py-24 print:py-8 print:px-0">
+    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16 print:py-8 print:px-0">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>

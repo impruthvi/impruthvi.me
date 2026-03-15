@@ -24,6 +24,7 @@ export const caseStudyFrontmatterSchema = z.object({
   role: z.string(),
   metrics: z.array(caseStudyMetricSchema),
   techStack: z.array(z.string()),
+  url: z.string().optional(),
   image: z.string().optional(),
   publishedAt: z.string(),
 });

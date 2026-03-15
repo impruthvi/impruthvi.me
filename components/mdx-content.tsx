@@ -1,5 +1,18 @@
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { highlight } from 'sugar-high'
+import { CopyButton } from './copy-button'
+
+function extractText(node: React.ReactNode): string {
+  if (typeof node === 'string') return node
+  if (typeof node === 'number') return String(node)
+  if (!node) return ''
+  if (Array.isArray(node)) return node.map(extractText).join('')
+  if (typeof node === 'object' && node !== null && 'props' in node) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return extractText((node as any).props.children)
+  }
+  return ''
+}
 
 function Code({ children, ...props }: React.ComponentProps<'code'>) {
   const isInline = !props.className
@@ -54,12 +67,20 @@ const components = {
       {...props}
     />
   ),
-  pre: (props: React.ComponentProps<'pre'>) => (
-    <pre
-      className="mb-4 overflow-x-auto rounded-lg bg-muted p-4 text-sm"
-      {...props}
-    />
-  ),
+  pre: ({ children, ...props }: React.ComponentProps<'pre'>) => {
+    const text = extractText(children)
+    return (
+      <div className="group relative mb-4">
+        <pre
+          className="overflow-x-auto rounded-lg bg-muted p-4 text-sm"
+          {...props}
+        >
+          {children}
+        </pre>
+        {text && <CopyButton text={text} />}
+      </div>
+    )
+  },
   code: Code,
   strong: (props: React.ComponentProps<'strong'>) => (
     <strong className="font-semibold text-foreground" {...props} />

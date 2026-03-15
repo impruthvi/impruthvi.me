@@ -19,9 +19,9 @@ techStack:
   - Inertia.js
   - MySQL
   - AWS EC2
+  - AWS SQS
   - Redis
   - Laravel Sanctum
-  - Horizon
   - Supervisor
   - Pest
   - Cypress
@@ -41,22 +41,26 @@ I was the primary backend developer, responsible for:
 - API architecture and database schema design
 - Performance optimization (the 800ms → 440ms story)
 - Test suite implementation (0% → 95% coverage)
-- Background job infrastructure (Horizon + Supervisor)
+- Notification system architecture (SQS + Supervisor) with multi-language support
 - Deployment pipeline on AWS EC2
 
 ## Technical Decisions
 
 **Why Laravel?** The team had PHP expertise, and Laravel's ecosystem (Sanctum for
-auth, Horizon for queues, Eloquent for ORM) meant we could move fast without
-building infrastructure from scratch.
+auth, Notifications for multi-channel delivery, Eloquent for ORM) meant we could
+move fast without building infrastructure from scratch.
 
 **Why Inertia.js + React?** We needed a reactive frontend but couldn't afford the
 complexity of a fully decoupled SPA. Inertia gave us React components with
 Laravel's routing and auth — the best of both worlds.
 
-**Why Redis?** Two reasons:
-1. Queue backend for Horizon (email workflows, notifications)
-2. Query caching for frequently-accessed patient lists
+**Why SQS?** We chose AWS SQS over Redis for the queue backend because:
+1. **Reliability** — managed infrastructure with built-in dead-letter queues for failed jobs
+2. **Per-channel retry** — each notification channel retries independently without blocking others
+3. **No self-managed broker** — SQS scales automatically, no Horizon/Redis tuning required
+
+**Why Redis?** We kept Redis as the caching layer:
+1. Query caching for frequently-accessed patient lists
 
 ## The Performance Story
 
@@ -75,22 +79,31 @@ I profiled and found three issues:
 Result: **800ms → 440ms** (45% reduction). The dashboard endpoint dropped to ~120ms
 with cache hits.
 
-## Background Job Architecture
+## Notification Architecture
+
+We used Laravel's Notification system with a fan-out pattern — one event dispatches a single job to SQS, which then fans out to independent channels:
 
 ```
-  Request ──▶ Controller ──▶ Dispatch Job ──▶ Redis Queue
-                                                   │
-                                           ┌───────┴───────┐
-                                           ▼               ▼
-                                    Email Worker    Notification Worker
-                                    (Horizon)       (Horizon)
-                                           │               │
-                                           ▼               ▼
-                                    Resend API      Database + Push
+Event (e.g., SessionCompleted)
+  │
+  ▼
+SendSessionNotification (Job) ──▶ SQS Queue
+  │
+  ▼
+Laravel Notification via() returns channels
+  │
+  ├──▶ DatabaseChannel     → stores in DB (in-app)
+  ├──▶ MailChannel          → sends email via Resend
+  ├──▶ FCMChannel           → Android + iOS push
+  ├──▶ WebPushChannel       → browser push
+  └──▶ BroadcastChannel     → real-time websocket
 ```
 
-Implemented event-driven job processing with Laravel Horizon and Supervisor:
-- Automated email workflows (appointment reminders, progress reports)
+Each channel runs as a separate queued job on SQS. If WebPush fails, only WebPush retries — the other channels are unaffected. This gives us **fault isolation** and **independent retry** per delivery method.
+
+All notification content is localized via the user's `locale` preference, so therapists and patients receive messages in their own language.
+
+- Automated multi-channel workflows (appointment reminders, progress reports, session completions)
 - Real-time notifications for therapists when patients complete sessions
 - Result: 30% increase in user engagement
 
@@ -106,4 +119,4 @@ Went from 0% to 95% test coverage:
 - Served **3,000+ patients** and **500+ therapists** with secure, role-based access
 - Reduced API response times from **800ms to 440ms** (45% improvement)
 - Achieved **95% test coverage**, enabling confident production deploys
-- Implemented event-driven background jobs that increased engagement by **30%**
+- Built multi-channel notification system with multi-language support, increasing engagement by **30%**

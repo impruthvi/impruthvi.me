@@ -1,0 +1,169 @@
+---
+title: "BizNetworkPro"
+tagline: "Multi-tenant SaaS platform for business networking organizations — manage clubs, track engagement, and reward participation"
+category: "B2B SaaS / Club Management"
+period: "2025 – Present"
+role: "Solo Founder & Full-Stack Developer"
+metrics:
+  - label: "Role Tiers"
+    value: "5-Level RBAC"
+  - label: "Payment Gateways"
+    value: "2 (India + Intl)"
+  - label: "Price Point"
+    value: "$59/year"
+  - label: "Multi-Tenant"
+    value: "RLS-Enforced"
+techStack:
+  - Next.js 16
+  - React 19
+  - TypeScript
+  - Tailwind CSS v4
+  - shadcn/ui + Radix
+  - Supabase
+  - Drizzle ORM
+  - Zustand + React Query
+  - React Hook Form + Zod v4
+  - Razorpay + Polar
+  - Resend
+  - Sentry
+  - PostHog
+  - Vercel
+url: "https://biznetworkpro.com"
+publishedAt: "2025-01-01"
+---
+
+## The Challenge
+
+Business networking organizations like BNI, Rotary, and Lions clubs manage attendance, referrals, and member engagement using spreadsheets, WhatsApp groups, and manual processes. Chapter presidents spend 2+ hours per week on administrative tasks — tracking who showed up, calculating points, following up on referrals, and generating reports for leadership. There is no purpose-built tool for this workflow, especially in the Indian market where UPI-based payments and regional club structures are the norm.
+
+BizNetworkPro replaces this manual overhead with a single platform: QR-code attendance, automated point calculations, referral tracking, meeting management, and real-time leaderboards — all within a multi-tenant architecture that supports organizations with multiple clubs.
+
+## My Role
+
+Solo founder and full-stack developer — I designed, built, and ship the entire product end-to-end:
+
+- Product strategy and market research (BNI/Rotary/Lions club workflows)
+- Multi-tenant architecture design with Row-Level Security
+- Hybrid RBAC system (5-tier role hierarchy)
+- Database schema design (14 tables with Drizzle ORM)
+- Service layer architecture (21 services, 19 server action modules)
+- Frontend (66 pages across marketing, auth, and dashboard)
+- Payment integration (Razorpay for India + Polar for international)
+- Email system (Resend — reminders, forwarding, transactional)
+- Cron jobs (auto-absence marking, meeting reminders)
+- Error monitoring (Sentry across client, server, cron, and webhooks)
+- SEO and analytics (PostHog)
+- Infrastructure and deployment (Vercel)
+
+## Technical Decisions
+
+### Why multi-tenant with RLS?
+
+Business networking organizations have a natural hierarchy: Organization → Club → Member. Row-Level Security at the PostgreSQL level ensures data isolation without application-level filtering bugs. A club admin in Mumbai can never accidentally see attendance data from a club in Delhi — the database enforces it.
+
+### Why a Service Layer?
+
+All business logic lives in `services/` (21 files). Server Actions in `actions/` are thin wrappers that call services. This decoupling means a future mobile app can call the same services via API route handlers without duplicating logic. The service layer is already consumed by both Server Actions and API routes (webhooks, cron jobs).
+
+### Why Razorpay + Polar?
+
+India requires UPI, net banking, and wallet support — Stripe doesn't support UPI. Razorpay handles the Indian market with async, webhook-based UPI flows. Polar was added for international payments. Both integrations use idempotent webhook processing with atomic `INSERT ... ON CONFLICT` checks to prevent duplicate charges.
+
+### Why Next.js 16 with Server Actions?
+
+Server Actions eliminate the need for a separate API layer for form submissions and mutations. Combined with React Server Components, most pages ship zero client-side JavaScript for data fetching. Turbopack provides fast dev builds for 66 pages.
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                    MULTI-TENANT ARCHITECTURE                  │
+│                                                               │
+│  [Landing/Marketing Pages]  ──→  Static (Vercel Edge)        │
+│                                                               │
+│  [Auth Flow]                                                  │
+│   Register → Email Verify → Login → Supabase Auth + JWT      │
+│                                                               │
+│  [Dashboard (Protected)]                                      │
+│   ├── Organization Dashboard                                  │
+│   ├── Club Management                                         │
+│   ├── Meeting Scheduler ──→ Cron: 24h & 1h Reminders         │
+│   ├── QR Attendance ──→ Points Engine (auto-calculate)        │
+│   ├── Referral Tracker ──→ Status Lifecycle                   │
+│   ├── One-to-One Meetings ──→ Logging + Points               │
+│   ├── Business Transactions ──→ Value Tracking                │
+│   ├── Leaderboard ──→ Configurable Point Rules                │
+│   ├── Reports ──→ CSV Export, Attendance, Points              │
+│   └── Billing ──→ Razorpay / Polar Webhooks                  │
+│                                                               │
+│  [Role Hierarchy]                                             │
+│   super_admin > org_admin > club_admin > club_officer > member│
+│                                                               │
+│  [Background Jobs]                                            │
+│   ├── Cron: Auto-absence (mark missing members)               │
+│   ├── Cron: Meeting reminders (24h + 1h before)               │
+│   └── Webhooks: Razorpay, Polar, Resend (inbound email)       │
+│                                                               │
+│  [Data Layer]                                                 │
+│   Supabase PostgreSQL + RLS + Drizzle ORM                     │
+│   14 tables │ Row-Level Security │ pgEnum for type safety     │
+└──────────────────────────────────────────────────────────────┘
+```
+
+## Core Features
+
+### QR Code Attendance
+
+Each member gets a unique QR code. At meetings, an admin scans QR codes — attendance is recorded instantly, points are calculated automatically, and the leaderboard updates in real-time. Replaces manual roll calls and Excel sheets.
+
+### Points & Gamification
+
+A configurable rules engine awards points for attendance, referrals, one-to-one meetings, and business transactions. Club admins can customize point values per activity. Leaderboards drive member engagement through friendly competition.
+
+### Referral Tracking
+
+Full lifecycle tracking: referral submitted → contacted → meeting set → closed. Tracks referral value in currency, letting clubs measure the actual business generated through networking.
+
+### Meeting Management
+
+Schedule meetings with date, time, location, and attendance cutoff. Automated email reminders at 24h and 1h before. RSVP tracking. Auto-absence cron marks members who didn't attend after meeting ends.
+
+### Multi-Tenant Billing
+
+Razorpay handles Indian payments (UPI, cards, net banking). Polar handles international payments. Both use webhook-driven processing with idempotent event recording, signature verification, and automatic invoice generation.
+
+## Freemium & Pricing
+
+### Tier Breakdown
+
+- **Starter (Free)** — 1 organization, 1 club, limited members
+- **Pro ($59/year)** — Up to 3 clubs, 50 members each, full reporting, CSV exports, all integrations
+
+### Payment Security
+
+Razorpay and Polar webhook signatures verified on every request. Rate limiting prevents replay attacks. Atomic idempotency checks (`INSERT ... ON CONFLICT`) eliminate duplicate event processing. Sentry captures all payment webhook failures with provider-specific tags.
+
+## Engineering Highlights
+
+- **66 pages** — marketing, auth, and dashboard routes with App Router
+- **21 services** — clean service layer decoupled from Server Actions
+- **19 server action modules** — thin wrappers calling services
+- **14 Drizzle schema tables** — with pgEnum, relations, and RLS
+- **69 React components** — including shadcn/ui, layout, and domain-specific
+- **5-tier RBAC** — hybrid role-based + custom permissions per user
+- **3 cron jobs** — auto-absence, meeting reminders (via Vercel Cron)
+- **3 webhook handlers** — Razorpay, Polar, Resend (all with Sentry capture)
+- **Structured data** — Organization, WebSite, SoftwareApplication JSON-LD schemas
+- **Full error monitoring** — Sentry across client (error boundaries), server actions, cron, and webhooks
+
+## What I Learned
+
+1. **Multi-tenant RLS requires careful schema design** — Every query must be scoped by `organization_id` and `club_id`. RLS policies at the database level are the safety net, but the application layer must also respect the hierarchy to avoid confusing UX (showing "0 results" instead of an unauthorized error).
+
+2. **Service layer pattern pays off early** — By month 2, I had cron jobs, webhooks, and Server Actions all calling the same service methods. Without the service layer, I would have duplicated business logic in 3 places.
+
+3. **Webhook idempotency is non-negotiable for payments** — Razorpay and Polar both retry webhooks on failure. Without atomic idempotency checks, duplicate payments and double invoice creation are inevitable. The `INSERT ... ON CONFLICT` pattern solved this cleanly.
+
+4. **Indian payment flows are fundamentally async** — UPI payments don't resolve immediately like card payments. The frontend must poll, the backend must handle webhooks, and the UX must communicate "payment pending" clearly. This is a different mental model from Stripe's synchronous flow.
+
+5. **Building product is the easy part** — A well-engineered product with zero users is worth nothing. The revised roadmap front-loads trust signals, onboarding activation, and content distribution before adding more features.

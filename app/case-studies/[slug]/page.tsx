@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react'
 import { getCaseStudyBySlug, getCaseStudies } from '@/actions/case-studies'
 import { MDXContent } from '@/components/mdx-content'
 import { Breadcrumbs } from '@/components/breadcrumbs'
@@ -60,7 +60,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      <article className="mx-auto max-w-5xl px-6 py-16 md:py-24">
+      <article className="mx-auto max-w-5xl px-6 py-12 md:py-16">
         <Breadcrumbs
           items={[
             { label: 'Case Studies', href: '/case-studies' },
@@ -82,6 +82,16 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           <p className="mt-1 text-sm text-muted-foreground">
             {metadata.period}
           </p>
+          {metadata.url && (
+            <a
+              href={metadata.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-laravel px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            >
+              Visit Live <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          )}
         </div>
 
         {/* Metrics */}
