@@ -1,0 +1,207 @@
+---
+title: "laramail v1.3.0 — Log Transport, Custom Providers & Always-To Redirect"
+summary: "Three new developer-experience features that make laramail stand out: a zero-config log driver for development, custom provider registration, and a staging safety net that redirects all emails to one inbox."
+image: /images/posts/laramail-v1.3.0.png
+author: 'Pruthvisinh Rajput'
+publishedAt: '2026-03-15'
+featured: true
+---
+
+I just shipped **laramail v1.3.0** — the developer experience release. Three features that solve real pain points I've hit while building email-heavy Node.js apps.
+
+If you haven't seen laramail before: it's Laravel's elegant Mail system, reimagined for Node.js/TypeScript. Same `Mail.to(user).send(new WelcomeEmail())` API, six built-in providers, `Mail.fake()` for testing, and now — three features that make development and staging workflows way smoother.
+
+---
+
+## The Problem
+
+Every email library makes you do one of these during development:
+
+1. **Set up a real SMTP server** just to see if your email looks right
+2. **Use a third-party service like Mailtrap** and check their dashboard
+3. **Comment out the send call** and console.log the options manually
+
+And in staging? You either risk sending real emails to real users, or you build a custom intercept layer.
+
+v1.3.0 solves both.
+
+---
+
+## Feature 1: Log Transport
+
+Set `driver: 'log'` and emails print to your console instead of sending. No SMTP, no API keys, no external services.
+
+```typescript
+import { Mail } from 'laramail';
+
+Mail.configure({
+  default: 'log',
+  from: { address: 'dev@example.com', name: 'My App' },
+  mailers: {
+    log: { driver: 'log' },
+  },
+});
+
+await Mail.to('user@example.com')
+  .subject('Welcome!')
+  .html('<h1>Hello World!</h1>')
+  .send();
+```
+
+Output:
+
+```
+============================================================
+  MAIL LOG
+============================================================
+  To:      user@example.com
+  From:    dev@example.com
+  Subject: Welcome!
+------------------------------------------------------------
+  Body (HTML):
+  <h1>Hello World!</h1>
+============================================================
+```
+
+It shows To, From, Subject, CC, BCC, Priority, attachment count, and the body (truncated at 500 chars for HTML). If you accidentally deploy with `driver: 'log'` in production, it warns you.
+
+**The pattern I use:**
+
+```typescript
+Mail.configure({
+  default: process.env.NODE_ENV === 'production' ? 'sendgrid' : 'log',
+  mailers: {
+    log: { driver: 'log' },
+    sendgrid: { driver: 'sendgrid', apiKey: process.env.SENDGRID_API_KEY! },
+  },
+  // ...
+});
+```
+
+Zero config in development. Real emails in production.
+
+---
+
+## Feature 2: Custom Providers (`Mail.extend()`)
+
+laramail ships with 6 providers (SMTP, SendGrid, SES, Mailgun, Resend, Postmark). But what if you use a provider we don't support? Or you want to send via a webhook? Or you have a custom internal email service?
+
+Now you can register any provider with a single call:
+
+```typescript
+Mail.extend('my-api', (config) => ({
+  async send(options) {
+    const res = await fetch('https://api.example.com/send', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${config.apiKey}` },
+      body: JSON.stringify({
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+      }),
+    });
+    const data = await res.json();
+    return { success: res.ok, messageId: data.id };
+  },
+}));
+
+Mail.configure({
+  default: 'api',
+  from: { address: 'noreply@example.com', name: 'App' },
+  mailers: {
+    api: { driver: 'my-api', apiKey: process.env.MY_API_KEY },
+  },
+});
+
+// Send as usual — your custom provider handles it
+await Mail.to('user@example.com').send(new WelcomeEmail());
+```
+
+Custom providers are checked **before** built-in drivers, so you can even override `smtp` or `sendgrid` with your own implementation. The factory receives the full mailer config, so you can add any custom properties you need.
+
+For testing, `MailManager.clearCustomProviders()` resets the registry.
+
+---
+
+## Feature 3: Always-To Redirect (`Mail.alwaysTo()`)
+
+This is the staging safety net. One line, and every email in your app goes to a single address. CC and BCC are cleared automatically.
+
+```typescript
+// All emails now go to dev-team@example.com
+Mail.alwaysTo('dev-team@example.com');
+
+// This goes to dev-team@example.com, NOT user@example.com
+await Mail.to('user@example.com')
+  .cc('manager@example.com')
+  .bcc('archive@example.com')
+  .subject('Invoice #1234')
+  .send();
+```
+
+Or set it via config with an environment variable:
+
+```typescript
+Mail.configure({
+  default: 'smtp',
+  alwaysTo: process.env.MAIL_ALWAYS_TO, // Set in staging, unset in production
+  mailers: { /* ... */ },
+});
+```
+
+```bash
+# .env.staging
+MAIL_ALWAYS_TO=staging@myapp.com
+
+# .env.production
+# Not set — emails go to real recipients
+```
+
+Key details:
+
+- **Applies after preprocessing** — priority headers, markdown rendering, and templates are already resolved
+- **Applies to `preview()` too** — so you can verify the redirect
+- **Skipped in fake mode** — `Mail.fake()` bypasses alwaysTo so your test assertions work against the original recipients
+- **Events see the redirected address** — useful for logging/monitoring
+
+Disable it anytime with `Mail.alwaysTo(undefined)`.
+
+---
+
+## The Numbers
+
+- **645 tests passing** (35 new)
+- **3 new features**, zero breaking changes
+- **743 lines added** across 13 files
+
+---
+
+## Getting Started
+
+```bash
+npm install laramail
+```
+
+```typescript
+import { Mail } from 'laramail';
+
+Mail.configure({
+  default: 'log', // Console output in dev
+  from: { address: 'noreply@example.com', name: 'My App' },
+  mailers: {
+    log: { driver: 'log' },
+  },
+});
+
+await Mail.to('user@example.com')
+  .subject('Hello!')
+  .html('<p>Welcome aboard!</p>')
+  .send();
+```
+
+- [GitHub](https://github.com/impruthvi/laramail)
+- [Documentation](https://nodemail.impruthvi.me/)
+- [npm](https://www.npmjs.com/package/laramail)
+- [Changelog](https://github.com/impruthvi/laramail/releases/tag/v1.3.0)
+
+If laramail helps you, a GitHub star goes a long way. It helps others discover the project.
