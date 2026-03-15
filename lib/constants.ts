@@ -1,8 +1,8 @@
 export const SITE = {
   name: "Pruthvisinh Rajput",
-  title: "Pruthvisinh Rajput — Laravel Developer",
+  title: "Pruthvisinh Rajput — Full-Stack Developer",
   description:
-    "Laravel developer with 4+ years of experience. Shipped healthcare SaaS to 3,000+ patients. PR merged by Taylor Otwell. $500K+ in processed transactions.",
+    "Full-stack developer specializing in Laravel and Node.js with 4+ years of experience. Shipped healthcare SaaS to 3,000+ patients. PR merged by Taylor Otwell. $500K+ in processed transactions.",
   url: "https://impruthvi.me",
   ogImage: "/images/og-default.png",
   author: "Pruthvisinh Rajput",

@@ -7,7 +7,7 @@ export function getPersonSchema() {
     name: SITE.name,
     url: SITE.url,
     email: SITE.email,
-    jobTitle: "Laravel Developer",
+    jobTitle: "Full-Stack Developer",
     description: SITE.description,
     address: {
       "@type": "PostalAddress",
