@@ -11,7 +11,7 @@ export const SITE = {
   availability: "Open to full-time roles",
   social: {
     github: "https://github.com/impruthvi",
-    linkedin: "https://www.linkedin.com/in/pruthvisinh-rajput-9a4711194",
+    linkedin: "https://www.linkedin.com/in/impruthvi/",
     twitter: "https://x.com/impruthvi13",
   },
 } as const;
