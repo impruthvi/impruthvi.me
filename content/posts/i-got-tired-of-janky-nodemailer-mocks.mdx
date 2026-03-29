@@ -1,0 +1,192 @@
+---
+title: 'I got tired of janky nodemailer mocks on every project'
+summary: 'Every Node.js project I joined had a broken email mock nobody wanted to touch. So I built Mail.fake() — zero-setup email testing for Node.js. No SMTP server, no jest.mock(), no console.log hunting.'
+image: /images/posts/laramail.png
+author: 'Pruthvisinh Rajput'
+publishedAt: '2026-03-30'
+featured: true
+---
+
+Every Node.js project I've joined has the same file somewhere.
+
+A giant `jest.mock()` block for nodemailer. Some manual spy setup. A comment that says "don't touch this." And at least one developer who spent three hours debugging it when `transporter.sendMail` silently stopped being called in tests.
+
+I kept rebuilding the same abstraction on every project. Eventually I stopped rebuilding it and just shipped it as a library.
+
+---
+
+## The fix: Mail.fake()
+
+```typescript
+Mail.fake();
+
+await Mail.to('user@example.com').send(new WelcomeEmail(user));
+
+Mail.assertSent(WelcomeEmail, (mail) => mail.hasTo('user@example.com'));
+```
+
+No SMTP server. No network. No mock setup. The test fails if the wrong email goes to the wrong address. That's it.
+
+---
+
+## What actually goes wrong with nodemailer mocks
+
+Here's the pattern I kept seeing:
+
+```typescript
+// Some version of this exists in nearly every Node.js codebase
+jest.mock('nodemailer', () => ({
+  createTransport: jest.fn().mockReturnValue({
+    sendMail: jest.fn().mockResolvedValue({ messageId: 'test-id' }),
+  }),
+}));
+```
+
+It works. Until it doesn't.
+
+- Someone upgrades nodemailer and the mock stops matching the real API
+- A new developer adds a new email send call and the mock swallows it silently
+- You want to assert the email went to the right address and suddenly you're digging through `sendMail.mock.calls[0][0].to`
+- You switch from nodemailer to Resend and now your entire mock layer needs to be rebuilt
+
+`Mail.fake()` solves all of this. It intercepts at the abstraction layer, not the transport layer. Your tests don't know or care what provider you're using.
+
+---
+
+## A real test
+
+```typescript
+import { Mail } from 'laramail';
+import { WelcomeEmail } from './emails/WelcomeEmail';
+
+describe('Registration', () => {
+  beforeEach(() => Mail.fake());
+  afterEach(() => Mail.restore());
+
+  it('sends a welcome email on signup', async () => {
+    await registerUser({ name: 'John', email: 'john@example.com' });
+
+    // Did the right email class get sent?
+    Mail.assertSent(WelcomeEmail);
+
+    // Did it go to the right address?
+    Mail.assertSent(WelcomeEmail, (mail) =>
+      mail.hasTo('john@example.com')
+    );
+
+    // Did it have the right subject?
+    Mail.assertSent(WelcomeEmail, (mail) =>
+      mail.subjectContains('Welcome')
+    );
+
+    // Was it sent exactly once? Was nothing else sent?
+    Mail.assertSentCount(WelcomeEmail, 1);
+    Mail.assertNotSent(PasswordResetEmail);
+  });
+});
+```
+
+Assertions that read like plain English. No `mock.calls[0][0]`.
+
+---
+
+## The Mailable class
+
+The `WelcomeEmail` in the example above is a Mailable — a self-contained, testable email object. This is the pattern from Laravel that I missed most in Node.js.
+
+```typescript
+import { Mailable } from 'laramail';
+
+class WelcomeEmail extends Mailable {
+  constructor(private user: { name: string; email: string }) {
+    super();
+  }
+
+  build() {
+    return this
+      .subject(`Welcome, ${this.user.name}!`)
+      .html(`
+        <h1>Hello ${this.user.name}!</h1>
+        <p>Thanks for joining. Your account is ready.</p>
+      `);
+  }
+}
+
+await Mail.to(user.email).send(new WelcomeEmail(user));
+```
+
+Your email logic lives in one place. Easy to test, easy to reuse, easy to find.
+
+---
+
+## Setup
+
+```typescript
+import { Mail } from 'laramail';
+
+Mail.configure({
+  default: process.env.MAIL_DRIVER, // 'smtp' | 'resend' | 'sendgrid' | 'ses' | 'mailgun' | 'postmark'
+  from: { address: 'noreply@example.com', name: 'My App' },
+  mailers: {
+    smtp: {
+      driver: 'smtp',
+      host: process.env.SMTP_HOST,
+      port: 587,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    },
+    resend: {
+      driver: 'resend',
+      apiKey: process.env.RESEND_API_KEY,
+    },
+  },
+});
+```
+
+Switch providers by changing `MAIL_DRIVER` in your `.env`. No code changes. That's a bonus side effect — the testing story is the reason I built this.
+
+---
+
+## One more thing: staging redirect
+
+In staging you never want to accidentally email real users. One line fixes it:
+
+```typescript
+if (process.env.NODE_ENV === 'staging') {
+  Mail.alwaysTo('dev@example.com');
+}
+```
+
+Every email your staging environment sends goes to `dev@example.com`. CC and BCC are cleared automatically.
+
+---
+
+## What's included
+
+- **`Mail.fake()` + `Mail.assertSent()`** — zero-setup email testing
+- **Mailable classes** — self-contained, reusable, testable email objects
+- **6 providers** — SMTP, SendGrid, AWS SES, Mailgun, Resend, Postmark
+- **Provider failover** — auto-chain if a provider fails
+- **Rate limiting** — sliding window, configurable per-mailer
+- **Queue support** — Bull / BullMQ
+- **Template engines** — Handlebars, EJS, Pug
+- **Markdown emails** — with built-in components
+- **Log transport** — console output in development, no SMTP needed
+- **Staging redirect** — `Mail.alwaysTo()`
+- **CLI tools** — `laramail preview`, `laramail send-test`, and more
+- **774 tests**, TypeScript-first, full API documentation
+
+The one-line pitch: **AdonisJS mailer, but framework-agnostic.** Works with Express, Fastify, NestJS, or any Node.js app.
+
+---
+
+## Get started
+
+```bash
+npm install laramail
+```
+
+- [GitHub](https://github.com/impruthvi/laramail) — star it if this solves a problem you've hit
+- [Documentation](https://laramail.impruthvi.me) — full API reference, including the testing docs
+- [npm](https://www.npmjs.com/package/laramail)
+
+If you've been living with a fragile nodemailer mock on every project — I built this for you.
