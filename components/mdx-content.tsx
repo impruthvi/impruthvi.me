@@ -1,5 +1,6 @@
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { highlight } from 'sugar-high'
+import remarkGfm from 'remark-gfm'
 import { CopyButton } from './copy-button'
 
 function extractText(node: React.ReactNode): string {
@@ -86,6 +87,29 @@ const components = {
     <strong className="font-semibold text-foreground" {...props} />
   ),
   hr: () => <hr className="my-8 border-border/50" />,
+  table: (props: React.ComponentProps<'table'>) => (
+    <div className="mb-6 overflow-x-auto">
+      <table className="w-full border-collapse text-sm" {...props} />
+    </div>
+  ),
+  thead: (props: React.ComponentProps<'thead'>) => (
+    <thead className="border-b border-border" {...props} />
+  ),
+  tbody: (props: React.ComponentProps<'tbody'>) => (
+    <tbody {...props} />
+  ),
+  tr: (props: React.ComponentProps<'tr'>) => (
+    <tr className="border-b border-border/50 transition-colors hover:bg-muted/30" {...props} />
+  ),
+  th: (props: React.ComponentProps<'th'>) => (
+    <th
+      className="px-4 py-2 text-left font-mono font-semibold text-foreground"
+      {...props}
+    />
+  ),
+  td: (props: React.ComponentProps<'td'>) => (
+    <td className="px-4 py-2 text-muted-foreground" {...props} />
+  ),
 }
 
 interface MDXContentProps {
@@ -95,7 +119,7 @@ interface MDXContentProps {
 export function MDXContent({ source }: MDXContentProps) {
   return (
     <div className="prose-custom">
-      <MDXRemote source={source} components={components} />
+      <MDXRemote source={source} components={components} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
     </div>
   )
 }
