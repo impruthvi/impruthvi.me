@@ -1,0 +1,200 @@
+---
+title: 'How 6 Laravel Starter Kits Get Built Automatically with a Single Bash Script'
+summary: 'Every push to main builds and deploys 6 production-ready Laravel starter kits to their own GitHub repos automatically. Here is how the whole pipeline works.'
+image: /images/posts/laravel-starter-kits-build-automation.png
+author: 'Pruthvisinh Rajput'
+publishedAt: '2026-04-19'
+featured: true
+---
+
+### Introduction
+
+Setting up a new Laravel project always starts the same way — install dependencies, configure PHPStan, set up Pint, wire in Rector, add Pest, write the architecture tests. Every. Single. Time.
+
+[pushpak1300](https://github.com/pushpak1300) got tired of it. He built a system that generates 6 production-ready Laravel starter kits automatically, pushes each one to its own GitHub repo, and rebuilds everything every night at 2am. I contribute to the repo — adding new features on top of what he built.
+
+One push to main. Six repos updated. Zero manual steps.
+
+Here is how it works.
+
+---
+
+## The Setup
+
+The whole thing lives in a single repository: `shipfastlabs/build`. It is not a Laravel app — it is a factory that generates them.
+
+```
+shipfastlabs/build
+├── build.sh              # The entire pipeline
+├── starter-kits.json     # Defines the 6 kits
+├── stubs/                # Files copied into every kit
+└── .github/workflows/    # GitHub Actions
+```
+
+The 6 kits are Vue, React, and Livewire — each with and without auth:
+
+```json
+{
+  "starterKits": [
+    { "repo": "modern-vue-starter-kit", "options": "--vue --pest --git" },
+    { "repo": "modern-vue-starter-kit-auth", "options": "--vue --pest --git --breeze" },
+    { "repo": "modern-react-starter-kit", "options": "--react --pest --git" },
+    { "repo": "modern-react-starter-kit-auth", "options": "--react --pest --git --breeze" },
+    { "repo": "modern-livewire-starter-kit", "options": "--livewire --pest --git" },
+    { "repo": "modern-livewire-starter-kit-auth", "options": "--livewire --pest --git --breeze" }
+  ]
+}
+```
+
+---
+
+## What `build.sh` Does Per Kit
+
+For each kit, the script runs through 9 steps:
+
+**1. Create the Laravel app**
+```bash
+laravel new modern-react-starter-kit --react --pest --git --force --no-interaction
+```
+
+**2. Install production packages**
+```bash
+composer require nunomaduro/essentials
+```
+
+**3. Install dev packages**
+```bash
+composer require --dev \
+  larastan/larastan \
+  barryvdh/laravel-ide-helper \
+  rector/rector \
+  driftingly/rector-laravel \
+  nunomaduro/pao \
+  pestphp/pest-plugin-type-coverage
+```
+
+`nunomaduro/pao` is worth calling out — it auto-detects AI agents (Claude Code, Cursor, Devin) and outputs compact JSON instead of human-readable tables. 95% token reduction on every test run.
+
+**4. Run artisan commands**
+```bash
+php artisan vendor:publish --tag=essentials-config
+php artisan essentials:pint --force
+php artisan essentials:rector --force
+php artisan ide-helper:generate
+php artisan ide-helper:models -RW
+```
+
+**5. Copy stubs**
+
+Everything in `stubs/` gets copied verbatim into the generated app — `rector.php`, `pint.json`, `phpstan.neon`, CI workflow, test files. This is how opinionated defaults get baked into every kit.
+
+**6. Update `.gitignore`**
+
+AI tool directories get ignored automatically:
+
+```
+.claude/
+.cursor/
+.idea/
+.vscode/
+.github/skills/
+```
+
+**7. Run Rector + Pint**
+
+After stubs are in place, the script runs both tools so the final code is already clean.
+
+**8. Inject composer scripts**
+
+This is my favourite part. The script patches `composer.json` directly using `jq`:
+
+```bash
+jq '.scripts.lint = ["./vendor/bin/rector", "./vendor/bin/pint --parallel"] |
+    .scripts["test:lint"] = ["./vendor/bin/pint --parallel --test", "./vendor/bin/rector --dry-run"] |
+    .scripts["test:types"] = "./vendor/bin/phpstan analyse --memory-limit=-1" |
+    .scripts["test:type-coverage"] = "pest --type-coverage --min=100" |
+    .scripts["test:unit"] = "pest" |
+    .scripts.test = ["@test:type-coverage", "@test:unit", "@test:lint", "@test:types"]' \
+    composer.json
+```
+
+Every generated kit ships with these commands out of the box:
+
+```bash
+composer lint               # auto-fix: rector + pint
+composer test:lint          # CI-safe: pint --test + rector --dry-run
+composer test:types         # PHPStan static analysis
+composer test:type-coverage # type coverage (min 100%)
+composer test:unit          # Pest tests
+composer test               # runs all of the above
+```
+
+**9. Deploy to GitHub**
+
+```bash
+gh repo create shipfastlabs/modern-react-starter-kit --public
+git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/shipfastlabs/modern-react-starter-kit.git"
+git push -f origin main
+```
+
+Every build force-pushes a single clean "Initial commit" — no history, no noise.
+
+---
+
+## The CI Pipeline
+
+GitHub Actions runs the whole thing on three triggers:
+
+```yaml
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'starter-kits.json'
+      - 'stubs/**'
+      - 'build.sh'
+  schedule:
+    - cron: '0 2 * * *'   # every night at 2am UTC
+  workflow_dispatch:        # manual trigger
+```
+
+The matrix job builds all 6 kits in parallel:
+
+```yaml
+strategy:
+  fail-fast: false
+  matrix:
+    kit: ${{ fromJson(needs.prepare.outputs.matrix) }}
+```
+
+`fail-fast: false` means one kit failing does not cancel the others.
+
+---
+
+## Using a Kit
+
+```bash
+laravel new my-project --using=shipfastlabs/modern-react-starter-kit
+composer run dev
+```
+
+That is it. PHPStan, Pint, Rector, Pest, type coverage, IDE helper — all pre-configured.
+
+---
+
+## What I Learned
+
+**`jq` is underrated.** Patching `composer.json` with `jq` instead of maintaining a stub file means the scripts stay in sync with whatever Laravel generates. No merge conflicts, no stale templates.
+
+**Stubs are powerful.** Dropping files into `stubs/` and having them copied verbatim into every kit is the cleanest way to share config. One place to update, six repos get the change.
+
+**HTTPS over SSH for CI.** GitHub Actions runners have no SSH key. The right pattern for CI git push is:
+```
+https://x-access-token:${GITHUB_TOKEN}@github.com/owner/repo.git
+```
+
+**Force push is fine for generated repos.** Each kit's entire history is one commit. There is nothing to preserve. Force push is not dangerous here — it is the correct tool.
+
+---
+
+The build repo is private and maintained by [pushpak1300](https://github.com/pushpak1300) — I contributed to the pipeline as part of the team. The generated kits are public at [github.com/shipfastlabs](https://github.com/shipfastlabs).
