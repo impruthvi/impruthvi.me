@@ -31,7 +31,7 @@ export async function generateMetadata({
     title: post.metadata.title,
     description: post.metadata.summary,
     openGraph: {
-      title: `${post.metadata.title} — ${SITE.name}`,
+      title: `${post.metadata.title} | ${SITE.name}`,
       description: post.metadata.summary,
       type: 'article',
       publishedTime: post.metadata.publishedAt,
@@ -89,7 +89,7 @@ export default async function PostPage({ params }: PostPageProps) {
         </div>
 
         <div className="mt-12 border-t border-border/50 pt-8">
-          <Button variant="ghost" render={<Link href="/posts" />}>
+          <Button nativeButton={false} variant="ghost" render={<Link href="/posts" />}>
             <ArrowLeft className="mr-1 h-4 w-4" /> Back to Blog
           </Button>
         </div>

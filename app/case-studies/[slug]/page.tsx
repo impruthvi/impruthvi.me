@@ -30,7 +30,7 @@ export async function generateMetadata({
     title: study.metadata.title,
     description: study.metadata.tagline,
     openGraph: {
-      title: `${study.metadata.title} — ${SITE.name}`,
+      title: `${study.metadata.title} | ${SITE.name}`,
       description: study.metadata.tagline,
       type: 'article',
       publishedTime: study.metadata.publishedAt,
@@ -128,10 +128,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         {/* Navigation */}
         <div className="mt-12 flex items-center justify-between border-t border-border/50 pt-8">
-          <Button variant="ghost" render={<Link href="/case-studies" />}>
+          <Button nativeButton={false} variant="ghost" render={<Link href="/case-studies" />}>
             <ArrowLeft className="mr-1 h-4 w-4" /> Back to Case Studies
           </Button>
-          <Button render={<Link href="/contact" />}>
+          <Button nativeButton={false} render={<Link href="/contact" />}>
             Contact Me <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
         </div>

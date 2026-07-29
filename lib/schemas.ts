@@ -27,6 +27,7 @@ export const caseStudyFrontmatterSchema = z.object({
   url: z.string().optional(),
   image: z.string().optional(),
   publishedAt: z.string(),
+  featured: z.boolean().optional().default(false),
 });
 
 export type CaseStudyFrontmatter = z.infer<

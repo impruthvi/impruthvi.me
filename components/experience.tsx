@@ -4,10 +4,10 @@ export function Experience() {
   return (
     <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
       <h2 className="font-mono text-2xl font-bold tracking-tight">
-        Experience
+        Where I&apos;ve Worked
       </h2>
       <p className="mt-2 text-muted-foreground">
-        4+ years building production Laravel applications.
+        5+ years shipping production software across healthcare, SaaS, and e-commerce.
       </p>
 
       <div className="mt-8 space-y-10">
@@ -36,7 +36,7 @@ export function Experience() {
                   key={i}
                   className="text-sm text-muted-foreground leading-relaxed"
                 >
-                  <span className="mr-2 text-laravel">&bull;</span>
+                  <span className="mr-2 text-muted-foreground">&bull;</span>
                   {highlight}
                 </li>
               ))}

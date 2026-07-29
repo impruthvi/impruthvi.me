@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Github, Linkedin, Twitter, ArrowRight, Download } from 'lucide-react'
+import { Github, Linkedin, Twitter, ArrowRight } from 'lucide-react'
 import { SITE, HERO_METRICS } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
 import { MetricCard } from '@/components/metric-card'
@@ -14,7 +14,7 @@ export function Hero() {
           <div className="relative h-[200px] w-[200px] overflow-hidden rounded-full border-2 border-border">
             <Image
               src="/images/authors/impruthvi.jpg"
-              alt={SITE.name}
+              alt={`${SITE.name}, profile photo`}
               fill
               priority
               className="object-cover"
@@ -27,19 +27,22 @@ export function Hero() {
           <h1 className="font-mono text-3xl font-bold tracking-tight sm:text-4xl">
             {SITE.name}
           </h1>
-          <p className="mt-1 text-lg text-laravel">Full-Stack Developer</p>
+          <p className="mt-1 text-lg text-laravel">Laravel & Node.js Engineer</p>
+          <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border/50 px-3 py-1 text-xs text-muted-foreground">
+            {SITE.location} · Remote
+          </span>
           <p className="mt-4 max-w-xl text-muted-foreground">
-            Full-stack developer specializing in Laravel and Node.js. Shipped a
-            healthcare SaaS to 3,000+ patients, reduced API response times by
-            45%, and had a PR merged by Taylor Otwell.
+            Shipped a healthcare SaaS to 3,000+ patients, reduced API response
+            times by 45%, and had a PR merged by Taylor Otwell into the Laravel
+            framework.
           </p>
 
           {/* CTAs */}
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Button render={<Link href="/resume" />}>
+            <Button nativeButton={false} render={<Link href="/resume" />}>
               View Resume <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
-            <Button variant="outline" render={<Link href="/contact" />}>
+            <Button nativeButton={false} variant="outline" render={<Link href="/contact" />}>
               Let&apos;s Talk
             </Button>
             <div className="flex items-center gap-2 ml-2">
@@ -47,27 +50,30 @@ export function Hero() {
                 href={SITE.social.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="relative text-muted-foreground transition-colors hover:text-foreground"
                 aria-label="GitHub"
               >
+                <span className="absolute -inset-3" aria-hidden="true" />
                 <Github className="h-5 w-5" />
               </Link>
               <Link
                 href={SITE.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="relative text-muted-foreground transition-colors hover:text-foreground"
                 aria-label="LinkedIn"
               >
+                <span className="absolute -inset-3" aria-hidden="true" />
                 <Linkedin className="h-5 w-5" />
               </Link>
               <Link
                 href={SITE.social.twitter}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className="relative text-muted-foreground transition-colors hover:text-foreground"
                 aria-label="X (Twitter)"
               >
+                <span className="absolute -inset-3" aria-hidden="true" />
                 <Twitter className="h-5 w-5" />
               </Link>
             </div>
