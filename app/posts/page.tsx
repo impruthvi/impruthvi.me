@@ -12,8 +12,8 @@ export default async function PostsPage() {
   const posts = await getPosts()
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-      <h1 className="font-mono text-3xl font-bold tracking-tight">Blog</h1>
+    <section className="site-section">
+      <h1 className="font-display text-3xl font-bold tracking-tight">Blog</h1>
       <p className="mt-2 text-muted-foreground">
         Writing about Laravel, backend architecture, and developer tools.
       </p>

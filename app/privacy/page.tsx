@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-      <h1 className="font-mono text-3xl font-bold tracking-tight">
+    <section className="site-section">
+      <h1 className="font-display text-3xl font-bold tracking-tight">
         Privacy Policy
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed text-muted-foreground">
         <div>
-          <h2 className="font-mono text-base font-semibold text-foreground">
+          <h2 className="font-display text-base font-semibold text-foreground">
             Overview
           </h2>
           <p className="mt-2">
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="font-mono text-base font-semibold text-foreground">
+          <h2 className="font-display text-base font-semibold text-foreground">
             Information Collected
           </h2>
           <p className="mt-2">
@@ -47,7 +47,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="font-mono text-base font-semibold text-foreground">
+          <h2 className="font-display text-base font-semibold text-foreground">
             Cookies
           </h2>
           <p className="mt-2">
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="font-mono text-base font-semibold text-foreground">
+          <h2 className="font-display text-base font-semibold text-foreground">
             Third-Party Services
           </h2>
           <p className="mt-2">
@@ -68,7 +68,7 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="font-mono text-base font-semibold text-foreground">
+          <h2 className="font-display text-base font-semibold text-foreground">
             Contact
           </h2>
           <p className="mt-2">

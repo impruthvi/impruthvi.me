@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button'
 
 export function CtaBanner() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-      <div className="rounded-lg border border-border/50 bg-muted/30 px-8 py-12 text-center">
-        <h2 className="font-mono text-2xl font-bold tracking-tight">
+    <section className="site-section">
+      <div className="rounded-none border border-border bg-surface px-8 py-12 text-center">
+        <h2 className="font-display text-2xl font-bold tracking-tight">
           Looking for a Laravel developer?
         </h2>
         <p className="mt-2 text-muted-foreground">

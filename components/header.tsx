@@ -11,41 +11,47 @@ export function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-        {/* Logo */}
+    <header className="sticky top-0 z-50 h-[79px] w-full border-b border-border bg-background/95 backdrop-blur-md md:h-[88px]">
+      <div className="site-container flex h-full items-center justify-between">
         <Link
           href="/"
-          className="font-mono text-lg font-bold tracking-tight transition-colors hover:text-laravel"
+          className="group flex min-h-11 items-center gap-2.5 font-mono text-xs font-semibold tracking-[-0.02em] md:gap-3 md:text-sm md:font-bold"
         >
+          <span
+            className="size-[9px] shrink-0 bg-laravel transition-transform group-hover:rotate-45 motion-reduce:transition-none"
+            aria-hidden="true"
+          />
           IMPRUTHVI
         </Link>
 
-        {/* Desktop nav */}
-        <nav aria-label="Main navigation" className="hidden items-center gap-8 md:flex">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                'relative text-sm transition-colors hover:text-laravel',
-                pathname === link.href
-                  ? 'text-foreground'
-                  : 'text-muted-foreground'
-              )}
-            >
-              {link.label}
-              {pathname === link.href && (
-                <span className="absolute -bottom-1 left-0 h-px w-full bg-laravel" />
-              )}
-            </Link>
-          ))}
+        <div className="hidden items-center gap-6 md:flex">
+          <nav aria-label="Main navigation" className="flex items-center gap-9">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={pathname === link.href ? 'page' : undefined}
+                className={cn(
+                  'relative py-3 text-sm leading-5 transition-colors hover:text-laravel focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
+                  pathname === link.href
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                )}
+              >
+                {link.label}
+                {pathname === link.href && (
+                  <span
+                    className="absolute inset-x-0 bottom-1 h-px bg-laravel"
+                    aria-hidden="true"
+                  />
+                )}
+              </Link>
+            ))}
+          </nav>
           <ThemeToggle />
-        </nav>
+        </div>
 
-        {/* Mobile nav */}
-        <div className="flex items-center gap-3 md:hidden">
-          <ThemeToggle />
+        <div className="flex items-center md:hidden">
           <MobileNav />
         </div>
       </div>

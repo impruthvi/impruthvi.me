@@ -2,8 +2,8 @@ import { experienceData } from '@/lib/experience-data'
 
 export function Experience() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-      <h2 className="font-mono text-2xl font-bold tracking-tight">
+    <section className="site-section">
+      <h2 className="font-display text-2xl font-bold tracking-tight">
         Where I&apos;ve Worked
       </h2>
       <p className="mt-2 text-muted-foreground">
@@ -18,7 +18,7 @@ export function Experience() {
 
             <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
               <div>
-                <h3 className="font-mono text-base font-semibold">
+                <h3 className="font-display text-base font-semibold">
                   {job.company}
                 </h3>
                 <p className="text-sm text-muted-foreground">

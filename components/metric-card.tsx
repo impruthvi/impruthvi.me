@@ -30,7 +30,7 @@ export function MetricCard({ value, label, subtext }: MetricCardProps) {
   return (
     <div
       ref={ref}
-      className={`rounded-lg border border-border/50 bg-muted/50 px-4 py-3 transition-all duration-500 motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 ${
+      className={`rounded-none border border-border bg-surface px-4 py-3 transition-all duration-500 motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
       }`}
     >

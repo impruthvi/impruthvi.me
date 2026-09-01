@@ -12,8 +12,8 @@ export default async function CaseStudiesPage() {
   const caseStudies = await getCaseStudies()
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-      <h1 className="font-mono text-3xl font-bold tracking-tight">
+    <section className="site-section">
+      <h1 className="font-display text-3xl font-bold tracking-tight">
         Case Studies
       </h1>
       <p className="mt-2 text-muted-foreground">

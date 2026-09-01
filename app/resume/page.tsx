@@ -16,11 +16,11 @@ export const metadata: Metadata = {
 
 export default function ResumePage() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16 print:py-8 print:px-0">
+    <section className="site-section print:w-full print:py-8">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="font-mono text-3xl font-bold tracking-tight">
+          <h1 className="font-display text-3xl font-bold tracking-tight">
             {SITE.name}
           </h1>
           <p className="mt-1 text-lg text-laravel">Laravel & Node.js Engineer</p>
@@ -67,7 +67,7 @@ export default function ResumePage() {
 
       {/* Summary */}
       <div className="mt-10">
-        <h2 className="font-mono text-lg font-bold">Professional Summary</h2>
+        <h2 className="font-display text-lg font-bold">Professional Summary</h2>
         <p className="mt-3 leading-relaxed text-muted-foreground">
           Laravel and Node.js engineer with 5+ years of production experience.
           Shipped a healthcare SaaS to 3,000+ patients, reduced API response
@@ -81,7 +81,7 @@ export default function ResumePage() {
 
       {/* Open Source */}
       <div className="mt-10">
-        <h2 className="font-mono text-lg font-bold">
+        <h2 className="font-display text-lg font-bold">
           Open Source Contributions
         </h2>
         <div className="mt-4 space-y-4">
@@ -103,7 +103,7 @@ export default function ResumePage() {
 
       {/* Skills */}
       <div className="mt-10">
-        <h2 className="font-mono text-lg font-bold">Technical Skills</h2>
+        <h2 className="font-display text-lg font-bold">Technical Skills</h2>
         <div className="mt-4 space-y-3">
           {skillsData.map((category) => (
             <div key={category.category} className="flex flex-wrap gap-x-1 text-sm">
@@ -118,7 +118,7 @@ export default function ResumePage() {
 
       {/* Experience */}
       <div className="mt-10">
-        <h2 className="font-mono text-lg font-bold">Work Experience</h2>
+        <h2 className="font-display text-lg font-bold">Work Experience</h2>
         <div className="mt-4 space-y-8">
           {experienceData.map((job) => (
             <div key={job.company}>
@@ -152,7 +152,7 @@ export default function ResumePage() {
 
       {/* Education */}
       <div className="mt-10">
-        <h2 className="font-mono text-lg font-bold">Education</h2>
+        <h2 className="font-display text-lg font-bold">Education</h2>
         <div className="mt-4">
           {educationData.map((edu) => (
             <div key={edu.institution}>
@@ -172,7 +172,7 @@ export default function ResumePage() {
 
       {/* Hackathons */}
       <div className="mt-10">
-        <h2 className="font-mono text-lg font-bold">Hackathons</h2>
+        <h2 className="font-display text-lg font-bold">Hackathons</h2>
         <div className="mt-4 space-y-2">
           {hackathonData.map((hack) => (
             <p key={hack.event} className="text-sm text-muted-foreground">

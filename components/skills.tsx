@@ -7,8 +7,8 @@ export function Skills() {
   const secondary = skillsData.filter((c) => c.category !== PRIMARY_CATEGORY)
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-      <h2 className="font-mono text-2xl font-bold tracking-tight">
+    <section className="site-section">
+      <h2 className="font-display text-2xl font-bold tracking-tight">
         The Stack I Reach For
       </h2>
       <p className="mt-2 text-muted-foreground">

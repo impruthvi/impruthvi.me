@@ -25,10 +25,10 @@ export default async function Home() {
       <Hero />
 
       {/* Case Studies */}
-      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
+      <section className="site-section">
         <div className="flex items-baseline justify-between gap-4">
           <div>
-            <h2 className="font-mono text-2xl font-bold tracking-tight">
+            <h2 className="font-display text-2xl font-bold tracking-tight">
               What I&apos;ve Built
             </h2>
             <p className="mt-2 text-muted-foreground">
