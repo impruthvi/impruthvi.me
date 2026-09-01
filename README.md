@@ -18,6 +18,38 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Browser verification
+
+Install Chromium once after installing project dependencies:
+
+```bash
+bunx playwright install chromium
+```
+
+Run the production-content browser suite locally or in CI:
+
+```bash
+bun run test:browser
+```
+
+The suite builds and starts the production app, then checks the seven core page
+families at 390px and 1440px. It verifies primary navigation, guards against
+horizontal overflow, and compares each page with its checked-in screenshot.
+Failures retain screenshots, the rendered DOM, browser console output, video,
+and a Playwright trace under `test-results/`; the HTML report is written to
+`playwright-report/`.
+
+Screenshot baselines are captured on macOS and carry Playwright's `darwin`
+platform suffix. The browser CI job therefore runs on `macos-14` so local and CI
+rendering use the same reference platform.
+
+Only after intentionally approving a visual change, refresh the reference
+screenshots with:
+
+```bash
+bun run test:browser:update
+```
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
