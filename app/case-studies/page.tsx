@@ -5,7 +5,7 @@ import { CaseStudyCard } from '@/components/case-study-card'
 export const metadata: Metadata = {
   title: 'Case Studies',
   description:
-    'Production applications I\'ve built — healthcare SaaS, property platforms, e-commerce systems, and more.',
+    'Production applications I\'ve built: healthcare SaaS, property platforms, e-commerce systems, and more.',
 }
 
 export default async function CaseStudiesPage() {

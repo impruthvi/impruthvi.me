@@ -8,6 +8,9 @@ import { contactFormSchema, type ContactFormData } from '@/lib/schemas'
 import { sendEmail } from '@/actions/contact'
 import { Button } from '@/components/ui/button'
 
+const inputClass =
+  'mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20'
+
 export function ContactForm() {
   const {
     register,
@@ -21,7 +24,7 @@ export function ContactForm() {
   async function onSubmit(data: ContactFormData) {
     const result = await sendEmail(data)
     if (result.success) {
-      toast.success('Message sent! I\'ll get back to you within 24 hours.')
+      toast.success("Message sent! I'll get back to you within 24 hours.")
       reset()
     } else {
       toast.error(result.error || 'Something went wrong.')
@@ -30,35 +33,46 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <p className="text-xs text-muted-foreground">
+        <span aria-hidden="true" className="text-destructive">*</span>{' '}
+        Required fields
+      </p>
+
       <div>
         <label htmlFor="name" className="text-sm font-medium">
-          Name
+          Name{' '}
+          <span aria-hidden="true" className="text-destructive">*</span>
         </label>
         <input
           id="name"
           type="text"
           placeholder="Your name"
+          aria-required="true"
           {...register('name')}
-          className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring"
+          className={inputClass}
         />
         {errors.name && (
-          <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
+          <p className="mt-1 text-xs text-destructive" role="alert">
+            {errors.name.message}
+          </p>
         )}
       </div>
 
       <div>
         <label htmlFor="email" className="text-sm font-medium">
-          Email
+          Email{' '}
+          <span aria-hidden="true" className="text-destructive">*</span>
         </label>
         <input
           id="email"
           type="email"
           placeholder="you@example.com"
+          aria-required="true"
           {...register('email')}
-          className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring"
+          className={inputClass}
         />
         {errors.email && (
-          <p className="mt-1 text-xs text-destructive">
+          <p className="mt-1 text-xs text-destructive" role="alert">
             {errors.email.message}
           </p>
         )}
@@ -66,17 +80,19 @@ export function ContactForm() {
 
       <div>
         <label htmlFor="message" className="text-sm font-medium">
-          Message
+          Message{' '}
+          <span aria-hidden="true" className="text-destructive">*</span>
         </label>
         <textarea
           id="message"
           rows={5}
-          placeholder="Tell me about your project or opportunity..."
+          placeholder="Tell me about your project or question..."
+          aria-required="true"
           {...register('message')}
-          className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring resize-none"
+          className={`${inputClass} resize-none`}
         />
         {errors.message && (
-          <p className="mt-1 text-xs text-destructive">
+          <p className="mt-1 text-xs text-destructive" role="alert">
             {errors.message.message}
           </p>
         )}
@@ -85,7 +101,8 @@ export function ContactForm() {
       <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
         {isSubmitting ? (
           <>
-            <Loader2 className="mr-1 h-4 w-4 animate-spin" /> Sending...
+            <Loader2 className="mr-1 h-4 w-4 animate-spin motion-reduce:animate-none" />{' '}
+            Sending...
           </>
         ) : (
           <>

@@ -6,7 +6,7 @@ export function OpenSourceSection() {
   return (
     <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
       <h2 className="font-mono text-2xl font-bold tracking-tight">
-        Open Source
+        What I Ship in the Open
       </h2>
       <p className="mt-2 text-muted-foreground">
         Packages I maintain and contributions to the Laravel ecosystem.
@@ -22,9 +22,9 @@ export function OpenSourceSection() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   {item.type === 'package' ? (
-                    <Package className="h-4 w-4 text-laravel" />
+                    <Package className="h-4 w-4 text-muted-foreground" />
                   ) : (
-                    <GitPullRequest className="h-4 w-4 text-laravel" />
+                    <GitPullRequest className="h-4 w-4 text-muted-foreground" />
                   )}
                   <h3 className="font-mono text-sm font-semibold">
                     {item.name}
@@ -47,18 +47,18 @@ export function OpenSourceSection() {
 
               <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
                 {item.badge && (
-                  <span className="rounded-full bg-laravel/10 px-3 py-1 text-xs font-medium text-laravel">
+                  <span className="rounded-full bg-laravel/10 px-3 py-1 text-xs font-medium text-foreground">
                     {item.badge}
                   </span>
                 )}
                 <div className="flex items-center gap-3">
                   <Link
-                    href={item.url}
+                    href={item.websiteUrl ?? item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                    className="flex items-center gap-1 py-2 px-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    {item.prUrl ? 'View PR' : 'GitHub'}
+                    {item.websiteUrl ? 'Website' : item.prUrl ? 'View PR' : 'GitHub'}
                     <ExternalLink className="h-3 w-3" />
                   </Link>
                   {item.docsUrl && (
@@ -66,7 +66,7 @@ export function OpenSourceSection() {
                       href={item.docsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                      className="flex items-center gap-1 py-2 px-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
                     >
                       Docs
                       <ExternalLink className="h-3 w-3" />

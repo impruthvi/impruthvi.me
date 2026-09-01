@@ -1,14 +1,14 @@
 export const SITE = {
   name: "Pruthvisinh Rajput",
-  title: "Pruthvisinh Rajput — Full-Stack Developer",
+  title: "Pruthvisinh Rajput | Laravel & Node.js Engineer",
   description:
-    "Full-stack developer specializing in Laravel and Node.js with 4+ years of experience. Shipped healthcare SaaS to 3,000+ patients. PR merged by Taylor Otwell. $500K+ in processed transactions.",
+    "Laravel & Node.js engineer with 5+ years of experience. Shipped healthcare SaaS to 3,000+ patients. PR merged by Taylor Otwell. $500K+ in processed transactions.",
   url: "https://impruthvi.me",
   ogImage: "/images/og-default.png",
   author: "Pruthvisinh Rajput",
   email: "pruthvirajput97@gmail.com",
   location: "Ahmedabad, Gujarat",
-  availability: "Open to full-time roles",
+  availability: "Software Engineer at Ricefwtech",
   social: {
     github: "https://github.com/impruthvi",
     linkedin: "https://www.linkedin.com/in/impruthvi/",
@@ -25,7 +25,7 @@ export const NAV_LINKS = [
 
 export const HERO_METRICS = [
   {
-    value: "4+",
+    value: "5+",
     label: "Years Experience",
     subtext: "Production Laravel apps",
   },
@@ -40,8 +40,8 @@ export const HERO_METRICS = [
     subtext: "Stripe & Razorpay",
   },
   {
-    value: "PR Merged",
-    label: "by Taylor Otwell",
-    subtext: "Laravel Starter Kit",
+    value: "5+",
+    label: "Laravel Org PRs",
+    subtext: "Across laravel org repos",
   },
 ] as const;

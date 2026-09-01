@@ -30,11 +30,11 @@ export function MetricCard({ value, label, subtext }: MetricCardProps) {
   return (
     <div
       ref={ref}
-      className={`rounded-lg border border-border/50 bg-muted/50 px-4 py-3 transition-all duration-500 ${
+      className={`rounded-lg border border-border/50 bg-muted/50 px-4 py-3 transition-all duration-500 motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
       }`}
     >
-      <p className="font-mono text-xl font-bold text-laravel">{value}</p>
+      <p className="font-mono text-xl font-bold text-foreground">{value}</p>
       <p className="text-sm font-medium text-foreground">{label}</p>
       <p className="text-xs text-muted-foreground">{subtext}</p>
     </div>

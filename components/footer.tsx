@@ -6,7 +6,7 @@ const socialLinks = [
   { href: SITE.social.github, icon: Github, label: 'GitHub' },
   { href: SITE.social.linkedin, icon: Linkedin, label: 'LinkedIn' },
   { href: SITE.social.twitter, icon: Twitter, label: 'X (Twitter)' },
-  { href: '/rss.xml', icon: Rss, label: 'RSS Feed' },
+  { href: '/rss.xml', icon: Rss, label: 'RSS Feed', internal: true },
 ]
 
 export function Footer() {
@@ -22,11 +22,11 @@ export function Footer() {
             <Link
               key={link.href}
               href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-laravel"
+              {...(!link.internal && { target: "_blank", rel: "noopener noreferrer" })}
+              className="relative transition-colors hover:text-laravel"
               aria-label={link.label}
             >
+              <span className="absolute -inset-3.5" aria-hidden="true" />
               <link.icon className="h-4 w-4" />
             </Link>
           ))}

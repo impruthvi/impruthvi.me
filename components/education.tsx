@@ -43,7 +43,7 @@ export function Education() {
             <div>
               <p className="text-sm">
                 <span className="font-semibold">{hack.title}</span>
-                {' — '}
+                {' · '}
                 <span className="text-muted-foreground">{hack.event}</span>
               </p>
             </div>

@@ -1,16 +1,18 @@
+import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 import { Hero } from '@/components/hero'
 import { OpenSourceSection } from '@/components/open-source-section'
 import { CaseStudyCard } from '@/components/case-study-card'
 import { Experience } from '@/components/experience'
 import { Skills } from '@/components/skills'
 import { FeaturedPosts } from '@/components/featured-posts'
-import { Education } from '@/components/education'
 import { CtaBanner } from '@/components/cta-banner'
 import { getCaseStudies } from '@/actions/case-studies'
 import { getPersonSchema, getWebSiteSchema } from '@/lib/structured-data'
 
 export default async function Home() {
   const caseStudies = await getCaseStudies()
+  const featured = caseStudies.filter((s) => s.featured)
 
   return (
     <>
@@ -21,27 +23,44 @@ export default async function Home() {
         }}
       />
       <Hero />
-      <OpenSourceSection />
 
       {/* Case Studies */}
       <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-        <h2 className="font-mono text-2xl font-bold tracking-tight">
-          What I&apos;ve Built
-        </h2>
-        <p className="mt-2 text-muted-foreground">
-          Production applications with real users and measurable impact.
-        </p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {caseStudies.map((study) => (
-            <CaseStudyCard key={study.slug} study={study} />
+        <div className="flex items-baseline justify-between gap-4">
+          <div>
+            <h2 className="font-mono text-2xl font-bold tracking-tight">
+              What I&apos;ve Built
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              Production applications with real users and measurable impact.
+            </p>
+          </div>
+          <Link
+            href="/case-studies"
+            className="hidden shrink-0 items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground sm:flex"
+          >
+            All {caseStudies.length} projects <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-4">
+          {featured.map((study) => (
+            <CaseStudyCard key={study.slug} study={study} featured />
           ))}
         </div>
+
+        <Link
+          href="/case-studies"
+          className="mt-6 flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground sm:hidden"
+        >
+          All {caseStudies.length} projects <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </section>
 
+      <OpenSourceSection />
       <Experience />
       <Skills />
       <FeaturedPosts />
-      <Education />
       <CtaBanner />
     </>
   )

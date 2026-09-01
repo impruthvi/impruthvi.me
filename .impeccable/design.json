@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-29T00:00:00Z",
+  "title": "Design System: impruthvi.me",
+  "extensions": {
+    "colorMeta": {
+      "laravel-red": {
+        "role": "primary",
+        "displayName": "Laravel Red",
+        "canonical": "#FF2D20",
+        "tonalRamp": ["#3d0800", "#6b0f05", "#9e1a0e", "#d12519", "#FF2D20", "#ff6155", "#ff9993", "#ffd4d1"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#09090b",
+        "tonalRamp": ["#000000", "#050505", "#09090b", "#18181b", "#27272a", "#3f3f46", "#71717a", "#a1a1aa"]
+      },
+      "card-dark": {
+        "role": "neutral",
+        "displayName": "Card Dark",
+        "canonical": "#18181b",
+        "tonalRamp": ["#050505", "#09090b", "#18181b", "#27272a", "#3f3f46", "#52525b", "#71717a", "#a1a1aa"]
+      },
+      "border-dark": {
+        "role": "neutral",
+        "displayName": "Border Dark",
+        "canonical": "#27272a",
+        "tonalRamp": ["#09090b", "#18181b", "#27272a", "#3f3f46", "#52525b", "#71717a", "#a1a1aa", "#d4d4d8"]
+      },
+      "ash": {
+        "role": "neutral",
+        "displayName": "Ash",
+        "canonical": "#a1a1aa",
+        "tonalRamp": ["#27272a", "#3f3f46", "#52525b", "#71717a", "#a1a1aa", "#d4d4d8", "#e4e4e7", "#f4f4f5"]
+      },
+      "near-white": {
+        "role": "neutral",
+        "displayName": "Near White",
+        "canonical": "#fafafa",
+        "tonalRamp": ["#71717a", "#a1a1aa", "#d4d4d8", "#e4e4e7", "#f4f4f5", "#f9f9f9", "#fafafa", "#ffffff"]
+      },
+      "surface-light": {
+        "role": "neutral",
+        "displayName": "Surface Light",
+        "canonical": "#f5f5f5",
+        "tonalRamp": ["#d4d4d4", "#e5e5e5", "#f0f0f0", "#f5f5f5", "#f9f9f9", "#fafafa", "#fcfcfc", "#ffffff"]
+      },
+      "stone": {
+        "role": "neutral",
+        "displayName": "Stone",
+        "canonical": "#737373",
+        "tonalRamp": ["#262626", "#404040", "#525252", "#737373", "#a3a3a3", "#d4d4d4", "#e5e5e5", "#f5f5f5"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero h1 only — Pruthvisinh's name at the top of the page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings — 'What I've Built', 'Experience', 'Technical Skills', etc."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, company names, package names."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All descriptive copy — taglines, highlights, blog excerpts."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Category tags only. Always uppercase, always Laravel Red."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-hover",
+        "value": "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)",
+        "purpose": "Applied on hover to CaseStudyCard and OpenSource items. Signals interactivity."
+      },
+      {
+        "name": "header-glass",
+        "value": "backdrop-filter: blur(12px)",
+        "purpose": "Persistent header depth layer. The only ambient depth in the system."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing for color and opacity state transitions (cards, buttons, nav links)."
+      },
+      {
+        "name": "ease-scroll-reveal",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1) 500ms",
+        "purpose": "MetricCard intersection-observer fade-in: translate-y-2 opacity-0 → translate-y-0 opacity-100."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px", "note": "Two-column grids (case studies, metrics)" },
+      { "name": "md", "value": "768px", "note": "Full desktop layout; hero unstacks; nav collapses to desktop" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main CTA button. Near-white on ink in dark mode — the lightest element on screen for maximum contrast.",
+      "html": "<button class=\"ds-btn-primary\">Get in Touch <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; background: #fafafa; color: #09090b; font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; font-weight: 500; border-radius: 0.625rem; border: 1px solid transparent; cursor: pointer; white-space: nowrap; transition: background 0.15s, transform 0.1s; user-select: none; outline: none; } .ds-btn-primary:hover { background: rgba(250,250,250,0.8); } .ds-btn-primary:focus-visible { border-color: #FF2D20; box-shadow: 0 0 0 3px rgba(255,45,32,0.3); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary svg { width: 16px; height: 16px; flex-shrink: 0; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary CTA. Always paired with primary in hero, CTA banner, and resume page.",
+      "html": "<button class=\"ds-btn-outline\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg> Download Resume</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; background: transparent; color: #fafafa; font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; font-weight: 500; border-radius: 0.625rem; border: 1px solid #27272a; cursor: pointer; white-space: nowrap; transition: background 0.15s, border-color 0.15s; outline: none; } .ds-btn-outline:hover { background: rgba(39,39,42,0.5); border-color: #3f3f46; } .ds-btn-outline:focus-visible { border-color: #FF2D20; box-shadow: 0 0 0 3px rgba(255,45,32,0.3); } .ds-btn-outline:active { transform: translateY(1px); } .ds-btn-outline svg { width: 16px; height: 16px; flex-shrink: 0; }"
+    },
+    {
+      "name": "Case Study Card",
+      "kind": "card",
+      "refersTo": "card-case-study",
+      "description": "Primary portfolio work surface. Full-card link with border+shadow hover state.",
+      "html": "<a class=\"ds-card-case-study\"><span class=\"ds-card-category\">Healthcare</span><h3 class=\"ds-card-title\">Everflex Plus</h3><p class=\"ds-card-tagline\">Patient engagement SaaS for physiotherapy clinics</p><div class=\"ds-card-metrics\"><p class=\"ds-metric-item\"><span class=\"ds-metric-val\">3,000+</span> patients served</p><p class=\"ds-metric-item\"><span class=\"ds-metric-val\">45%</span> faster API response</p></div><div class=\"ds-card-stack\"><span class=\"ds-tech-chip\">Laravel</span><span class=\"ds-tech-chip\">Vue.js</span><span class=\"ds-tech-chip\">MySQL</span></div><p class=\"ds-card-cta\">Read Case Study <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></p></a>",
+      "css": ".ds-card-case-study { display: block; border-radius: 0.625rem; border: 1px solid rgba(39,39,42,0.5); background: rgba(24,24,27,0.3); padding: 24px; text-decoration: none; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; cursor: pointer; } .ds-card-case-study:hover { border-color: #27272a; background: rgba(24,24,27,0.5); box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08); } .ds-card-category { font-family: Inter, ui-sans-serif, sans-serif; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: #FF2D20; } .ds-card-title { margin-top: 8px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 18px; font-weight: 600; letter-spacing: -0.015em; color: #fafafa; } .ds-card-tagline { margin-top: 4px; font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; color: #a1a1aa; } .ds-card-metrics { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 4px 16px; } .ds-metric-item { font-family: Inter, ui-sans-serif, sans-serif; font-size: 12px; color: #a1a1aa; } .ds-metric-val { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 700; color: #fafafa; } .ds-card-stack { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; } .ds-tech-chip { background: #27272a; color: #fafafa; font-family: Inter, ui-sans-serif, sans-serif; font-size: 12px; padding: 2px 8px; border-radius: 0.5rem; } .ds-card-cta { margin-top: 16px; display: inline-flex; align-items: center; gap: 4px; font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; font-weight: 500; color: #a1a1aa; transition: color 0.15s; } .ds-card-case-study:hover .ds-card-cta { color: #FF2D20; } .ds-card-cta svg { flex-shrink: 0; }"
+    },
+    {
+      "name": "Metric Card",
+      "kind": "card",
+      "refersTo": "card-metric",
+      "description": "Stat tile. Laravel Red value, neutral label and subtext. Fade-in on scroll entry.",
+      "html": "<div class=\"ds-card-metric\"><p class=\"ds-metric-primary\">3,000+</p><p class=\"ds-metric-label\">Patients Served</p><p class=\"ds-metric-sub\">Everflex Plus SaaS</p></div>",
+      "css": ".ds-card-metric { border-radius: 0.625rem; border: 1px solid rgba(39,39,42,0.5); background: rgba(24,24,27,0.5); padding: 12px 16px; } .ds-metric-primary { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 20px; font-weight: 700; color: #FF2D20; line-height: 1.2; } .ds-metric-label { margin-top: 2px; font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; font-weight: 500; color: #fafafa; } .ds-metric-sub { font-family: Inter, ui-sans-serif, sans-serif; font-size: 12px; color: #a1a1aa; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "description": "Contact form field. Full-opacity border at rest; shifts to Laravel Red on focus.",
+      "html": "<div class=\"ds-input-wrap\"><label class=\"ds-input-label\" for=\"ds-name\">Name</label><input class=\"ds-input\" id=\"ds-name\" type=\"text\" placeholder=\"Your name\" /></div>",
+      "css": ".ds-input-wrap { display: flex; flex-direction: column; gap: 4px; } .ds-input-label { font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; font-weight: 500; color: #fafafa; } .ds-input { background: #09090b; color: #fafafa; border: 1px solid #27272a; border-radius: 0.625rem; padding: 10px 16px; font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; width: 100%; outline: none; transition: border-color 0.15s; } .ds-input::placeholder { color: #a1a1aa; } .ds-input:focus { border-color: #FF2D20; } .ds-input:disabled { opacity: 0.5; pointer-events: none; }"
+    },
+    {
+      "name": "Skill Chip",
+      "kind": "chip",
+      "refersTo": "chip-skill",
+      "description": "Technology/skill tag in the Skills section. Border shifts toward Laravel Red on hover.",
+      "html": "<span class=\"ds-chip-skill\">Laravel</span>",
+      "css": ".ds-chip-skill { display: inline-block; border-radius: 0.5rem; border: 1px solid rgba(39,39,42,0.5); background: rgba(24,24,27,0.5); padding: 6px 12px; font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; color: #a1a1aa; transition: border-color 0.15s, color 0.15s; cursor: default; } .ds-chip-skill:hover { border-color: rgba(255,45,32,0.5); color: #fafafa; }"
+    },
+    {
+      "name": "Badge Pill",
+      "kind": "chip",
+      "description": "Achievement callout. Laravel Red tint fill — used only for quantified accomplishments.",
+      "html": "<span class=\"ds-badge-pill\">Merged by Taylor Otwell</span>",
+      "css": ".ds-badge-pill { display: inline-block; border-radius: 9999px; background: rgba(255,45,32,0.1); padding: 4px 12px; font-family: Inter, ui-sans-serif, sans-serif; font-size: 12px; font-weight: 500; color: #FF2D20; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Sticky glass header with logo, desktop nav links, and theme toggle.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-nav-logo\" href=\"/\">IMPRUTHVI</a><nav class=\"ds-nav-links\"><a class=\"ds-nav-link\" href=\"/case-studies\">Work</a><a class=\"ds-nav-link ds-nav-link--active\" href=\"/posts\">Blog</a><a class=\"ds-nav-link\" href=\"/resume\">Resume</a><a class=\"ds-nav-link\" href=\"/contact\">Contact</a></nav></header>",
+      "css": ".ds-nav { position: sticky; top: 0; z-index: 50; width: 100%; border-bottom: 1px solid rgba(39,39,42,0.5); background: rgba(9,9,11,0.8); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 24px; max-width: 1024px; margin: 0 auto; box-sizing: border-box; } .ds-nav-logo { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.025em; color: #fafafa; text-decoration: none; transition: color 0.15s; } .ds-nav-logo:hover { color: #FF2D20; } .ds-nav-links { display: flex; align-items: center; gap: 32px; } .ds-nav-link { position: relative; font-family: Inter, ui-sans-serif, sans-serif; font-size: 14px; color: #a1a1aa; text-decoration: none; transition: color 0.15s; } .ds-nav-link:hover { color: #FF2D20; } .ds-nav-link--active { color: #fafafa; } .ds-nav-link--active::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 1px; background: #FF2D20; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Precision Terminal",
+    "overview": "This system communicates engineering mastery by being engineered. Near-black zinc (#09090b) reads like a terminal in full focus — not a dark-themed website, but a purpose-built surface where every pixel is load-bearing. JetBrains Mono anchors every heading and identifier, creating a consistent subtext: this was built by someone who lives in a code editor. Inter handles reading copy with quiet professionalism, never competing for attention.\n\nOne color breaks the discipline: Laravel Red (#FF2D20). It appears on timeline dots, metric values, category labels, active nav underlines, and focus rings — never filling surfaces, never decorating. Its rarity is its meaning. When the eye lands on red, it has landed on something that matters.\n\nThe system is dark-mode-first — .dark is the default body class, not an opt-in. Surfaces layer tonally (ink → card-dark → border-dark) rather than through shadows, with depth conveyed through stepped zinc stops and controlled opacity borders.",
+    "keyCharacteristics": [
+      "Dark zinc ground (#09090b) as base; tonal layering via #18181b and #27272a for depth",
+      "Single accent (Laravel Red #FF2D20) used with strict economy — status color, not decoration",
+      "JetBrains Mono for all structural type (headings, identifiers, metrics); Inter for reading",
+      "Borders always at 50% opacity at rest; full opacity on hover signals interactivity",
+      "Flat-by-default elevation; shadow-sm appears on card hover only",
+      "Max-width container (1024px) with 24px gutter; generous section padding (48–64px)"
+    ],
+    "rules": [
+      {
+        "name": "The One Red Rule",
+        "body": "Laravel Red appears on ≤3 interactive or semantic elements per viewport at rest. It is a status color, not a decoration. When something is red, it is either active, focused, a measurable achievement, or the brand identifier. Never use it as a fill on any surface larger than a 12px dot or an underline.",
+        "section": "colors"
+      },
+      {
+        "name": "The Opacity Border Rule",
+        "body": "Borders are declared at 50% opacity (border-border/50) at rest. Full-opacity borders (border-border) appear only on hover or focus, conveying interactivity through increased definition without adding visual noise to the resting state.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Authority Rule",
+        "body": "JetBrains Mono is used exclusively for structural type — headings, identifiers, metrics, the logo. Inter handles all reading copy. Cross-pollination (mono for body text, sans for headings) is not permitted. The typeface is the signal; keep it unambiguous.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces rest flat. Shadow is a hover state, not a design element. If a card is casting a shadow at rest, it is wrong.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use JetBrains Mono for all section headings (font-mono font-bold tracking-tight) — it is the system's structural identity.",
+      "Do keep borders at 50% opacity at rest (border-border/50) and full opacity on hover — this is the primary interactivity signal for cards and chips.",
+      "Do use Laravel Red (#FF2D20) for metric values, active states, category labels, timeline dots, and focus rings — these are its only sanctioned uses.",
+      "Do use the badge pill (rounded-full bg-laravel/10 text-laravel) only for quantified achievement callouts.",
+      "Do maintain max-w-5xl px-6 for all section containers — no edge-to-edge surfaces.",
+      "Do include the intersection-observer fade-in for metric and stat cards on first scroll entry.",
+      "Do write section headings as short, declarative, title-case phrases matching the existing voice."
+    ],
+    "donts": [
+      "Don't use Laravel Red as a background fill on any surface larger than a 12px circle or a 1px underline.",
+      "Don't add a second accent color. The system has one: #FF2D20.",
+      "Don't use Inter for section headings or the logo — mono is the structural signal, sans is the prose signal.",
+      "Don't add shadows at rest. Only shadow-sm on card hover. The header backdrop-blur is the only persistent depth effect.",
+      "Don't use fully-rounded corners (rounded-full) on anything except timeline dots and badge pills.",
+      "Don't use uppercase text except for category labels (label role, text-laravel, uppercase tracking-wider).",
+      "Don't break out of the max-w-5xl container. There are no full-bleed sections in this system."
+    ]
+  }
+}

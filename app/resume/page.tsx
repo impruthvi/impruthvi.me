@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 export const metadata: Metadata = {
   title: 'Resume',
   description:
-    'Resume — Pruthvisinh Rajput | Laravel Developer with 4+ years of experience.',
+    'Resume of Pruthvisinh Rajput, Laravel & Node.js Engineer with 5+ years of experience.',
 }
 
 export default function ResumePage() {
@@ -23,7 +23,7 @@ export default function ResumePage() {
           <h1 className="font-mono text-3xl font-bold tracking-tight">
             {SITE.name}
           </h1>
-          <p className="mt-1 text-lg text-laravel">Laravel Developer</p>
+          <p className="mt-1 text-lg text-laravel">Laravel & Node.js Engineer</p>
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5" /> {SITE.location}
@@ -37,21 +37,26 @@ export default function ResumePage() {
               href={SITE.social.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground transition-colors hover:text-foreground"
+              className="relative text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="GitHub"
             >
+              <span className="absolute -inset-3.5 print:hidden" aria-hidden="true" />
               <Github className="h-4 w-4" />
             </Link>
             <Link
               href={SITE.social.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground transition-colors hover:text-foreground"
+              className="relative text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="LinkedIn"
             >
+              <span className="absolute -inset-3.5 print:hidden" aria-hidden="true" />
               <Linkedin className="h-4 w-4" />
             </Link>
           </div>
         </div>
         <Button
+          nativeButton={false}
           variant="outline"
           render={<a href="/Pruthvisinh_Rajput.pdf" download />}
           className="print:hidden"
@@ -64,13 +69,13 @@ export default function ResumePage() {
       <div className="mt-10">
         <h2 className="font-mono text-lg font-bold">Professional Summary</h2>
         <p className="mt-3 leading-relaxed text-muted-foreground">
-          Laravel developer who shipped a healthcare SaaS platform to 3,000+
-          patients, reduced API response times from 800ms to 440ms, and had a
-          pull request merged by Taylor Otwell into the Laravel React Starter
-          Kit. Four years of production experience building scalable backends
-          with PHP, Laravel, and modern frontends (React, Vue.js) that serve
-          real users at scale — with 99.9% uptime, 95% test coverage, and
-          $500K+ in processed transactions.
+          Laravel and Node.js engineer with 5+ years of production experience.
+          Shipped a healthcare SaaS to 3,000+ patients, reduced API response
+          times from 800ms to 440ms, and merged 5+ pull requests into the
+          Laravel GitHub org including one reviewed and merged by Taylor Otwell.
+          Currently at Ricefwtech as Software Engineer, leading architecture
+          and engineering direction across multiple product lines. Track record:
+          99.9% uptime, 95% test coverage, and $500K+ in processed transactions.
         </p>
       </div>
 
@@ -120,7 +125,7 @@ export default function ResumePage() {
               <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
                 <div>
                   <h3 className="text-sm font-semibold">
-                    {job.position} — {job.company}
+                    {job.position} &middot; {job.company}
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {job.location}
@@ -174,7 +179,7 @@ export default function ResumePage() {
               <span className="font-medium text-foreground">
                 {hack.title}
               </span>{' '}
-              — {hack.event}
+              &middot; {hack.event}
             </p>
           ))}
         </div>
