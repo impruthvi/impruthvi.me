@@ -23,16 +23,33 @@ export const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-export const HERO_METRICS = [
+export interface HeroMetric {
+  value: string;
+  label: string;
+  subtext: string;
+  mobileValue?: string;
+  mobileLabel?: string;
+}
+
+export const OPEN_SOURCE_SIGNAL = {
+  value: "5+",
+  label: "Laravel organization PRs",
+  description: "Including a starter-kit fix merged by Taylor Otwell.",
+} as const;
+
+export const HERO_METRICS: readonly HeroMetric[] = [
   {
     value: "5+",
     label: "Years Experience",
     subtext: "Production Laravel apps",
+    mobileLabel: "Years in production",
   },
   {
     value: "50,000+",
     label: "Users Served",
     subtext: "Across 10+ applications",
+    mobileValue: "50K+",
+    mobileLabel: "Users served",
   },
   {
     value: "$500K+",
@@ -40,8 +57,10 @@ export const HERO_METRICS = [
     subtext: "Stripe & Razorpay",
   },
   {
-    value: "5+",
-    label: "Laravel Org PRs",
-    subtext: "Across laravel org repos",
+    value: "45%",
+    label: "API Speedup",
+    subtext: "800ms down to 440ms",
+    mobileValue: "95%",
+    mobileLabel: "Test Coverage",
   },
-] as const;
+];

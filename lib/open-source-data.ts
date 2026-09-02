@@ -8,6 +8,13 @@ export interface OpenSourceItem {
   websiteUrl?: string;
   badge?: string;
   techStack: string[];
+  homepage?: {
+    repository?: string;
+    title?: string;
+    number?: number;
+    mergedBy?: string;
+    description: string;
+  };
 }
 
 export const openSourceData: OpenSourceItem[] = [
@@ -20,6 +27,13 @@ export const openSourceData: OpenSourceItem[] = [
     prUrl: "https://github.com/laravel/react-starter-kit/pull/46",
     badge: "Merged by @taylorotwell",
     techStack: ["TypeScript", "React", "Laravel"],
+    homepage: {
+      repository: "laravel / react-starter-kit",
+      title: "Fix TypeScript form handling in useForm",
+      number: 46,
+      mergedBy: "Taylor Otwell",
+      description: "Fixed TypeScript form handling and prevented missing field submissions.",
+    },
   },
   {
     name: "Mobile-Responsive Drawer: PR #57",
@@ -30,6 +44,9 @@ export const openSourceData: OpenSourceItem[] = [
     prUrl: "https://github.com/laravel/react-starter-kit/pull/57",
     badge: "Positive review from @tnylea",
     techStack: ["React", "TypeScript", "Laravel"],
+    homepage: {
+      description: "Responsive drawer for mobile navigation",
+    },
   },
   {
     name: "Laravel Boost: 4 PRs",
@@ -40,6 +57,10 @@ export const openSourceData: OpenSourceItem[] = [
     prUrl: "https://github.com/laravel/boost/pulls?q=is%3Apr+is%3Aclosed+author%3Aimpruthvi",
     badge: "4 PRs Merged",
     techStack: ["PHP", "Laravel"],
+    homepage: {
+      title: "Laravel Boost",
+      description: "Official Laravel package",
+    },
   },
   {
     name: "@impruthvi/nodemail",
@@ -50,6 +71,9 @@ export const openSourceData: OpenSourceItem[] = [
     docsUrl: "https://nodemail.impruthvi.me",
     badge: "300+ weekly downloads",
     techStack: ["TypeScript", "Node.js", "BullMQ"],
+    homepage: {
+      description: "Email tooling for Node.js",
+    },
   },
   {
     name: "ShipFastLabs / Starter Kit",
@@ -60,6 +84,9 @@ export const openSourceData: OpenSourceItem[] = [
     websiteUrl: "https://shipfastlabs.com/",
     badge: "Maintainer",
     techStack: ["Laravel", "PHP"],
+    homepage: {
+      description: "Maintainer of the production starter kit",
+    },
   },
   {
     name: "ShipFastLabs / parsel",
@@ -69,5 +96,8 @@ export const openSourceData: OpenSourceItem[] = [
     url: "https://github.com/shipfastlabs/parsel",
     badge: "Contributor",
     techStack: ["Laravel", "PHP"],
+    homepage: {
+      description: "Contributor to local document parsing in PHP",
+    },
   },
 ];

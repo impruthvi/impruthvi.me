@@ -5,6 +5,7 @@ export interface ExperienceItem {
   date: string;
   highlights: string[];
   techStack: string[];
+  homepageSummary?: string;
 }
 
 export const experienceData: ExperienceItem[] = [
@@ -19,6 +20,7 @@ export const experienceData: ExperienceItem[] = [
       "Identifying product gaps and translating technical analysis into concrete improvements, directly improving outcomes for end users.",
     ],
     techStack: ["Laravel", "PHP", "Node.js", "React", "Vue.js", "MySQL", "PostgreSQL", "Redis", "Docker", "GitHub Actions"],
+    homepageSummary: "Cross-product architecture, gap analysis, PR reviews, and engineering direction.",
   },
   {
     company: "Vivansh Infotech",
@@ -40,6 +42,7 @@ export const experienceData: ExperienceItem[] = [
       "PHPUnit",
       "Pest",
     ],
+    homepageSummary: "Laravel and Inertia product delivery, integrations, and performance optimization.",
   },
   {
     company: "Yudiz Solutions Limited",
@@ -62,6 +65,7 @@ export const experienceData: ExperienceItem[] = [
       "Stripe",
       "Razorpay",
     ],
+    homepageSummary: "10+ production applications, payments, AWS delivery, and test adoption.",
   },
   {
     company: "Adore India",
