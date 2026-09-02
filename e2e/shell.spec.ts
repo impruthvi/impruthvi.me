@@ -186,7 +186,7 @@ test('evidence surfaces keep sharp geometry and technical typography', async ({
 }) => {
   await page.goto('/')
 
-  const metric = page.getByText('Years Experience', { exact: true }).locator('..')
+  const metric = page.getByText('Years Experience', { exact: true }).locator('../..')
   const value = metric.getByText('5+', { exact: true })
 
   await expect(metric).toHaveCSS('background-color', 'rgb(24, 24, 27)')
