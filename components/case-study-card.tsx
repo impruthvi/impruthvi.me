@@ -12,15 +12,15 @@ export function CaseStudyCard({ study, featured = false }: CaseStudyCardProps) {
     return (
       <Link
         href={`/case-studies/${study.slug}`}
-        className="group rounded-lg border border-border/50 bg-muted/30 p-6 transition-all hover:border-border hover:bg-muted/50 hover:shadow-sm"
+        className="group rounded-none border border-border bg-surface p-6 transition-colors hover:border-laravel"
       >
         <div className="flex items-start justify-between gap-4">
-          <span className="text-xs font-medium uppercase tracking-wider text-laravel">
+          <span className="font-mono text-xs font-medium uppercase tracking-wider text-laravel">
             {study.category}
           </span>
           <span className="shrink-0 text-xs text-muted-foreground">{study.period}</span>
         </div>
-        <h3 className="mt-2 font-mono text-xl font-bold tracking-tight">
+        <h3 className="mt-2 font-display text-xl font-bold tracking-tight">
           {study.title}
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">{study.tagline}</p>
@@ -58,12 +58,12 @@ export function CaseStudyCard({ study, featured = false }: CaseStudyCardProps) {
   return (
     <Link
       href={`/case-studies/${study.slug}`}
-      className="group rounded-lg border border-border/50 bg-muted/30 p-6 transition-all hover:border-border hover:bg-muted/50 hover:shadow-sm"
+      className="group rounded-none border border-border bg-surface p-6 transition-colors hover:border-laravel"
     >
-      <span className="text-xs font-medium uppercase tracking-wider text-laravel">
+      <span className="font-mono text-xs font-medium uppercase tracking-wider text-laravel">
         {study.category}
       </span>
-      <h3 className="mt-2 font-mono text-lg font-semibold tracking-tight">
+      <h3 className="mt-2 font-display text-lg font-semibold tracking-tight">
         {study.title}
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">{study.tagline}</p>

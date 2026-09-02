@@ -32,13 +32,13 @@ function Code({ children, ...props }: React.ComponentProps<'code'>) {
 const components = {
   h2: (props: React.ComponentProps<'h2'>) => (
     <h2
-      className="mt-10 mb-4 font-mono text-xl font-bold tracking-tight"
+      className="mt-10 mb-4 font-display text-xl font-bold tracking-tight"
       {...props}
     />
   ),
   h3: (props: React.ComponentProps<'h3'>) => (
     <h3
-      className="mt-8 mb-3 font-mono text-lg font-semibold tracking-tight"
+      className="mt-8 mb-3 font-display text-lg font-semibold tracking-tight"
       {...props}
     />
   ),

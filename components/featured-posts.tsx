@@ -9,10 +9,10 @@ export async function FeaturedPosts() {
   if (posts.length === 0) return null
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
+    <section className="site-section">
       <div className="flex items-baseline justify-between">
         <div>
-          <h2 className="font-mono text-2xl font-bold tracking-tight">
+          <h2 className="font-display text-2xl font-bold tracking-tight">
             Writing
           </h2>
           <p className="mt-2 text-muted-foreground">
@@ -32,10 +32,10 @@ export async function FeaturedPosts() {
           <Link
             key={post.slug}
             href={`/posts/${post.slug}`}
-            className="group flex flex-col gap-1 rounded-lg border border-border/50 bg-muted/30 p-5 transition-all hover:border-border hover:bg-muted/50 sm:flex-row sm:items-baseline sm:justify-between"
+            className="group flex flex-col gap-1 rounded-none border border-border bg-surface p-5 transition-colors hover:border-laravel sm:flex-row sm:items-baseline sm:justify-between"
           >
             <div className="flex-1">
-              <h3 className="font-mono text-sm font-semibold tracking-tight transition-colors group-hover:text-foreground">
+              <h3 className="font-display text-sm font-semibold tracking-tight transition-colors group-hover:text-foreground">
                 {post.title}
               </h3>
               <p className="mt-1 text-sm text-muted-foreground line-clamp-1">

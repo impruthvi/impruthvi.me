@@ -7,7 +7,7 @@ import { MetricCard } from '@/components/metric-card'
 
 export function Hero() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
+    <section className="site-section">
       <div className="flex flex-col items-start gap-10 md:flex-row md:items-center md:gap-16">
         {/* Photo */}
         <div className="shrink-0">
@@ -24,7 +24,7 @@ export function Hero() {
 
         {/* Content */}
         <div className="flex-1">
-          <h1 className="font-mono text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
             {SITE.name}
           </h1>
           <p className="mt-1 text-lg text-laravel">Laravel & Node.js Engineer</p>

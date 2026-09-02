@@ -62,7 +62,7 @@ export default async function PostPage({ params }: PostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      <article className="mx-auto max-w-5xl px-6 py-12 md:py-16">
+      <article className="site-section">
         <Breadcrumbs
           items={[
             { label: 'Blog', href: '/posts' },
@@ -71,7 +71,7 @@ export default async function PostPage({ params }: PostPageProps) {
         />
 
         <header className="mt-8">
-          <h1 className="font-mono text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
             {metadata.title}
           </h1>
           <p className="mt-2 text-muted-foreground">{metadata.summary}</p>

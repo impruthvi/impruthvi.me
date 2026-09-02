@@ -1,24 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
-
-type CoreRoute = {
-  name: string
-  path: string
-  navigationLabel?: string
-}
-
-const coreRoutes: readonly CoreRoute[] = [
-  { name: 'home', path: '/' },
-  { name: 'work-index', path: '/case-studies', navigationLabel: 'Work' },
-  { name: 'case-study', path: '/case-studies/biznetworkpro' },
-  { name: 'writing-index', path: '/posts', navigationLabel: 'Blog' },
-  {
-    name: 'article',
-    path: '/posts/laravel-starter-kits-build-automation',
-  },
-  { name: 'resume', path: '/resume', navigationLabel: 'Resume' },
-  { name: 'contact', path: '/contact', navigationLabel: 'Contact' },
-]
+import { coreRoutes } from './routes'
 
 async function waitForStablePage(page: Page) {
   await page.locator('main').waitFor()

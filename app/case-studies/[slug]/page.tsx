@@ -9,6 +9,7 @@ import { CtaBanner } from '@/components/cta-banner'
 import { getArticleSchema } from '@/lib/structured-data'
 import { SITE } from '@/lib/constants'
 import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button-variants'
 
 interface CaseStudyPageProps {
   params: Promise<{ slug: string }>
@@ -60,7 +61,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      <article className="mx-auto max-w-5xl px-6 py-12 md:py-16">
+      <article className="site-section">
         <Breadcrumbs
           items={[
             { label: 'Case Studies', href: '/case-studies' },
@@ -70,10 +71,10 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
 
         {/* Header */}
         <div className="mt-8">
-          <span className="text-xs font-medium uppercase tracking-wider text-laravel">
+          <span className="font-mono text-xs font-medium uppercase tracking-wider text-laravel">
             {metadata.category} &middot; {metadata.role}
           </span>
-          <h1 className="mt-2 font-mono text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
             {metadata.title}
           </h1>
           <p className="mt-2 text-lg text-muted-foreground">
@@ -87,7 +88,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
               href={metadata.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-laravel px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              className={buttonVariants({ variant: 'brand', className: 'mt-3' })}
             >
               Visit Live <ExternalLink className="h-3.5 w-3.5" />
             </a>
@@ -99,7 +100,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           {metadata.metrics.map((metric) => (
             <div
               key={metric.label}
-              className="rounded-lg border border-border/50 bg-muted/50 px-4 py-3"
+              className="rounded-none border border-border bg-surface px-4 py-3"
             >
               <p className="font-mono text-xl font-bold text-laravel">
                 {metric.value}

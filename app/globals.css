@@ -9,6 +9,7 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-surface: var(--surface);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
@@ -37,8 +38,12 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-laravel: var(--laravel);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-foreground: var(--brand-foreground);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+  --container-main: 73.75rem;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -51,24 +56,28 @@
 /* Light mode */
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
+  --foreground: #18181b;
+  --surface: #f4f4f5;
+  --card: #f4f4f5;
+  --card-foreground: #18181b;
   --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  --primary: #0a0a0a;
+  --popover-foreground: #18181b;
+  --primary: #18181b;
   --primary-foreground: #fafafa;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #0a0a0a;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --accent: #f5f5f5;
-  --accent-foreground: #0a0a0a;
-  --destructive: #ef4444;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #FF2D20;
-  --laravel: #FF2D20;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+  --accent: #e4e4e7;
+  --accent-foreground: #18181b;
+  --destructive: #b91c1c;
+  --border: #d4d4d8;
+  --input: #d4d4d8;
+  --ring: #d92317;
+  --laravel: #d92317;
+  --brand-hover: #c51d12;
+  --brand-foreground: #ffffff;
+  --field-border: #94949a;
   --chart-1: #FF2D20;
   --chart-2: #f97316;
   --chart-3: #eab308;
@@ -89,6 +98,7 @@
 .dark {
   --background: #09090b;
   --foreground: #fafafa;
+  --surface: #18181b;
   --card: #18181b;
   --card-foreground: #fafafa;
   --popover: #18181b;
@@ -102,10 +112,13 @@
   --accent: #27272a;
   --accent-foreground: #fafafa;
   --destructive: #ef4444;
-  --border: #27272a;
-  --input: #27272a;
+  --border: #2d2d30;
+  --input: #2d2d30;
   --ring: #FF2D20;
   --laravel: #FF2D20;
+  --brand-hover: #ff4b40;
+  --brand-foreground: #09090b;
+  --field-border: #626268;
   --chart-1: #FF2D20;
   --chart-2: #fb923c;
   --chart-3: #facc15;
@@ -130,5 +143,60 @@
   }
   html {
     @apply font-sans scroll-smooth;
+  }
+}
+
+@layer components {
+  .field-control {
+    width: 100%;
+    border: 1px solid var(--field-border);
+    border-radius: 6px;
+    background: var(--background);
+    padding-inline: 16px;
+    color: var(--foreground);
+    font-family: var(--font-inter);
+    font-size: 14px;
+    line-height: 18px;
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+
+  .field-control::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  .field-control:focus-visible {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 24%, transparent);
+  }
+
+  .field-control[aria-invalid="true"] {
+    border-color: var(--destructive);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .field-control {
+      transition: none;
+    }
+  }
+
+  .site-container,
+  .site-section {
+    width: min(calc(100% - 3rem), var(--container-main));
+    margin-inline: auto;
+  }
+
+  .site-section {
+    padding-block: 3rem;
+  }
+
+  @media (min-width: 48rem) {
+    .site-section {
+      padding-block: 5rem;
+    }
   }
 }

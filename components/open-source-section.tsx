@@ -4,8 +4,8 @@ import { openSourceData } from '@/lib/open-source-data'
 
 export function OpenSourceSection() {
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-      <h2 className="font-mono text-2xl font-bold tracking-tight">
+    <section className="site-section">
+      <h2 className="font-display text-2xl font-bold tracking-tight">
         What I Ship in the Open
       </h2>
       <p className="mt-2 text-muted-foreground">
@@ -16,7 +16,7 @@ export function OpenSourceSection() {
         {openSourceData.map((item) => (
           <div
             key={item.name}
-            className="group rounded-lg border border-border/50 bg-muted/30 p-5 transition-colors hover:border-border hover:bg-muted/50"
+            className="group rounded-none border border-border bg-surface p-5 transition-colors hover:border-laravel"
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex-1">
@@ -26,7 +26,7 @@ export function OpenSourceSection() {
                   ) : (
                     <GitPullRequest className="h-4 w-4 text-muted-foreground" />
                   )}
-                  <h3 className="font-mono text-sm font-semibold">
+                  <h3 className="font-display text-sm font-semibold">
                     {item.name}
                   </h3>
                 </div>

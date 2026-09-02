@@ -8,9 +8,6 @@ import { contactFormSchema, type ContactFormData } from '@/lib/schemas'
 import { sendEmail } from '@/actions/contact'
 import { Button } from '@/components/ui/button'
 
-const inputClass =
-  'mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20'
-
 export function ContactForm() {
   const {
     register,
@@ -39,7 +36,7 @@ export function ContactForm() {
       </p>
 
       <div>
-        <label htmlFor="name" className="text-sm font-medium">
+        <label htmlFor="name" className="text-[13px] font-semibold leading-[18px]">
           Name{' '}
           <span aria-hidden="true" className="text-destructive">*</span>
         </label>
@@ -48,18 +45,20 @@ export function ContactForm() {
           type="text"
           placeholder="Your name"
           aria-required="true"
+          aria-describedby={errors.name ? 'name-error' : undefined}
           {...register('name')}
-          className={inputClass}
+          aria-invalid={errors.name ? 'true' : undefined}
+          className="field-control mt-2 h-[50px]"
         />
         {errors.name && (
-          <p className="mt-1 text-xs text-destructive" role="alert">
+          <p id="name-error" className="mt-1 text-xs text-destructive" role="alert">
             {errors.name.message}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor="email" className="text-sm font-medium">
+        <label htmlFor="email" className="text-[13px] font-semibold leading-[18px]">
           Email{' '}
           <span aria-hidden="true" className="text-destructive">*</span>
         </label>
@@ -68,18 +67,20 @@ export function ContactForm() {
           type="email"
           placeholder="you@example.com"
           aria-required="true"
+          aria-describedby={errors.email ? 'email-error' : undefined}
           {...register('email')}
-          className={inputClass}
+          aria-invalid={errors.email ? 'true' : undefined}
+          className="field-control mt-2 h-[50px]"
         />
         {errors.email && (
-          <p className="mt-1 text-xs text-destructive" role="alert">
+          <p id="email-error" className="mt-1 text-xs text-destructive" role="alert">
             {errors.email.message}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor="message" className="text-sm font-medium">
+        <label htmlFor="message" className="text-[13px] font-semibold leading-[18px]">
           Message{' '}
           <span aria-hidden="true" className="text-destructive">*</span>
         </label>
@@ -88,17 +89,24 @@ export function ContactForm() {
           rows={5}
           placeholder="Tell me about your project or question..."
           aria-required="true"
+          aria-describedby={errors.message ? 'message-error' : undefined}
           {...register('message')}
-          className={`${inputClass} resize-none`}
+          aria-invalid={errors.message ? 'true' : undefined}
+          className="field-control mt-2 h-[174px] resize-none py-[15px] leading-[22px]"
         />
         {errors.message && (
-          <p className="mt-1 text-xs text-destructive" role="alert">
+          <p id="message-error" className="mt-1 text-xs text-destructive" role="alert">
             {errors.message.message}
           </p>
         )}
       </div>
 
-      <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
+      <Button
+        type="submit"
+        variant="brand"
+        disabled={isSubmitting}
+        className="w-full sm:w-auto"
+      >
         {isSubmitting ? (
           <>
             <Loader2 className="mr-1 h-4 w-4 animate-spin motion-reduce:animate-none" />{' '}
