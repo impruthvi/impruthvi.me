@@ -1,0 +1,317 @@
+---
+title: 'Testing Stripe Billing Lifecycles Offline in Laravel with Cashier Dunning'
+summary: 'Cashier Dunning lets Laravel developers record a real Stripe billing lifecycle once and replay failed payments, retries, cancellations, resubscriptions, duplicates, and out-of-order webhooks completely offline.'
+image: /images/posts/cashier-dunning.png
+author: 'Pruthvisinh Rajput'
+publishedAt: '2026-09-09'
+featured: true
+---
+
+### Introduction
+
+Most Laravel applications test the happy path of subscription billing.
+
+A customer subscribes. The payment succeeds. The subscription becomes active.
+
+But what happens when the payment fails?
+
+What happens when Stripe retries the payment? What if those retries are exhausted and the subscription is cancelled? What happens when the customer fixes their card and subscribes again?
+
+And perhaps more importantly: **does your application actually remove access at the right time?**
+
+These scenarios are important, but they are surprisingly difficult to test properly.
+
+That's why I built **Cashier Dunning**, an open-source Laravel package for recording and replaying Stripe billing lifecycles.
+
+Instead of waiting days or weeks for a billing lifecycle to happen, you can replay the entire sequence locally or in CI in about a second.
+
+No Stripe account during replay. No API key in CI. No network.
+
+---
+
+## The Problem with Testing Subscription Billing
+
+Testing a normal subscription flow is relatively straightforward.
+
+Testing the complete failure lifecycle is different.
+
+A realistic billing lifecycle might look something like this:
+
+```text
+Day 0   → Trial starts
+Day 14  → Trial ends
+Day 14  → First payment attempt fails
+Day 28  → Stripe continues retrying
+Day 31  → Retries are exhausted
+Day 31  → Subscription is cancelled
+Day 34  → Customer fixes their card
+Day 34  → Customer subscribes again
+```
+
+Your Laravel application may behave correctly when the subscription starts.
+
+But there are many other questions worth testing:
+
+- Does access change correctly after a failed payment?
+- What happens while Stripe is retrying?
+- Is access removed when the subscription is cancelled?
+- Can the customer successfully resubscribe?
+- What happens if the same webhook is delivered twice?
+- What happens if webhook events arrive out of order?
+
+These paths often receive much less automated testing than the successful payment path.
+
+---
+
+## Why Normal Integration Tests Aren't Enough
+
+You can test these scenarios against Stripe directly.
+
+But doing that introduces several requirements.
+
+Your test environment needs Stripe credentials.
+
+Your CI environment may need API keys stored as secrets.
+
+Tests can depend on network availability.
+
+You also need to reproduce the correct sequence of webhook events.
+
+And lifecycle timing makes some scenarios awkward to reproduce repeatedly.
+
+For normal integration testing, that's acceptable.
+
+For a test suite that should run quickly and deterministically on every pull request, it's not ideal.
+
+I wanted something closer to:
+
+```bash
+php artisan billing:simulate trial-dunning-cancel-reactivate
+```
+
+And have Laravel experience the lifecycle as if Stripe had actually delivered it.
+
+That's what Cashier Dunning is designed to do.
+
+---
+
+## How Cashier Dunning Works
+
+Cashier Dunning follows a simple idea:
+
+**Record the real lifecycle once. Replay it as many times as you want.**
+
+During recording, Stripe remains the source of truth.
+
+The resulting lifecycle can then be replayed without contacting Stripe.
+
+The important part is that replay doesn't simply call your application's listeners directly.
+
+Events are sent through your application's **real webhook route**.
+
+That means the replay can exercise the same path your application uses for actual Stripe webhook delivery, including signature verification and your application's webhook listeners.
+
+The goal is to test your billing integration as a system rather than mocking every individual component.
+
+---
+
+## Replaying 30 Days in About a Second
+
+A recorded scenario can represent weeks of billing activity while executing almost immediately.
+
+For example:
+
+```text
+$ php artisan billing:simulate trial-dunning-cancel-reactivate
+
+ok   +0d      trial starts
+ok   +14d1h   trial ends, first payment attempt fails
+ok   +28d     retries continue, access holds
+ok   +31d     retries exhausted, subscription cancelled
+ok   +34d     customer fixes their card, resubscribes
+```
+
+Instead of waiting for those events to occur in real time, the lifecycle is replayed deterministically.
+
+This makes it practical to include failed-payment testing in your normal development and CI workflow.
+
+---
+
+## Testing the Webhook Problems We Usually Ignore
+
+Payment failure isn't the only thing I wanted to test.
+
+Webhook delivery itself introduces another class of problems.
+
+Stripe webhook handlers should be designed to tolerate events being delivered more than once, and applications shouldn't assume that related events will always arrive in the order they expect.
+
+These bugs can be difficult to discover because the normal development flow usually sends events in a clean sequence.
+
+Cashier Dunning can deliberately replay lifecycle events as:
+
+- Duplicate events
+- Out-of-order events
+
+This lets you test whether your billing logic is actually idempotent and resilient.
+
+For example, what happens if your application processes the same payment failure twice?
+
+Or if a subscription-related event reaches your application later than expected?
+
+Those are exactly the kinds of cases I want the package to make easy to test.
+
+---
+
+## Designed for CI
+
+One of the main goals of Cashier Dunning is making billing lifecycle tests practical inside CI.
+
+During replay, you don't need:
+
+```text
+Stripe account
+Stripe API key
+External network request
+Real-time billing lifecycle
+```
+
+Instead, the recorded lifecycle becomes a deterministic test fixture.
+
+That means your CI pipeline can replay the same billing scenario on every run.
+
+```text
+Real Stripe lifecycle
+        ↓
+     Record
+        ↓
+Recorded scenario
+        ↓
+ ┌──────┴──────┐
+ ↓             ↓
+Local          CI
+ ↓             ↓
+Replay         Replay
+ ↓             ↓
+Laravel webhook route
+ ↓
+Signature verification
+ ↓
+Real application listeners
+```
+
+The same input should produce the same application behavior every time.
+
+---
+
+## Installation
+
+Cashier Dunning is intended as a development/testing dependency.
+
+Install it using Composer:
+
+```bash
+composer require impruthvi/cashier-dunning --dev
+```
+
+The project is open source and MIT licensed.
+
+It currently targets Laravel 11 through Laravel 13.
+
+---
+
+## What I Want to Test
+
+The package is focused specifically on the parts of subscription billing that are easy to forget.
+
+That includes:
+
+- Trial expiration
+- Failed payments
+- Payment retries
+- Subscription cancellation
+- Resubscription
+- Duplicate webhook delivery
+- Out-of-order webhook delivery
+
+The long-term goal is not to replace Stripe's own testing tools.
+
+It's to give Laravel developers another layer of testing for their **application's response to the Stripe billing lifecycle**.
+
+Stripe can tell you that an event was delivered.
+
+Your application's tests should tell you whether that event caused the correct business behavior.
+
+---
+
+## Why I Built It
+
+The idea came from a simple question:
+
+> How confident am I that my application behaves correctly after the customer's payment stops?
+
+For many applications, the answer isn't as clear as it should be.
+
+Billing code has consequences beyond simply charging a card.
+
+It can control:
+
+- Feature access
+- Account status
+- Subscription permissions
+- Notifications
+- Grace periods
+- Cancellation behavior
+- Reactivation
+
+A bug in any of these paths might not become visible until weeks after the original subscription started.
+
+I wanted those failures to become something we could reproduce during development instead of discovering them from customers in production.
+
+---
+
+## Open Source
+
+Cashier Dunning is open source under the MIT license.
+
+You can find the project here:
+
+**GitHub:**
+https://github.com/impruthvi/cashier-dunning
+
+If you're running Laravel Cashier and Stripe in production, I'd especially like feedback on the scenarios the package should support.
+
+What billing edge cases have caused problems in your applications?
+
+What Stripe webhook scenarios are difficult for your team to test?
+
+Issues, suggestions, and contributions are welcome.
+
+---
+
+## Conclusion
+
+Subscription billing isn't finished when the first payment succeeds.
+
+Trials expire.
+
+Cards fail.
+
+Payments are retried.
+
+Subscriptions get cancelled.
+
+Customers come back.
+
+Webhooks can be duplicated or arrive in unexpected sequences.
+
+Those paths deserve tests too.
+
+With Cashier Dunning, the goal is simple:
+
+**Record the billing lifecycle once. Replay it everywhere.**
+
+Thirty days of Stripe billing behavior, replayed in about a second.
+
+No Stripe account during replay. No API key in CI. No network.
+
+Happy testing! 🚀
