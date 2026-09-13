@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# impruthvi.me
 
-## Getting Started
+An editorial portfolio built with Bun, Next.js App Router, React and Tailwind CSS. Dark is the default theme; the light theme preference persists in the browser.
 
-First, run the development server:
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install --frozen-lockfile
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. To check the production build:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun test
+bun run build
+bun run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Content
 
-## Learn More
+- `content/posts/*.mdx` supplies `/notes` and `/notes/[slug]`.
+- `content/case-studies/*.mdx` supplies the home work index and `/work/[slug]`.
+- `src/data/` holds experience, skills, education and open-source work.
+- `src/lib/site.ts` holds contact details, navigation and social links.
+- `public/images/` holds article images and the portrait. The résumé is `public/Pruthvisinh_Rajput.pdf`.
 
-To learn more about Next.js, take a look at the following resources:
+Use the existing MDX files as frontmatter examples. Post fields include `title`, `summary`, `publishedAt` (a quoted ISO date), `image` and `author`. Case studies use `title`, `tagline`, `period`, `role`, `category`, `techStack`, `metrics` and an optional `url`. Only add metrics backed by the actual project.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The filename determines the URL slug. Content is compiled at build time, so publishing an edit requires a new build. MDX is executable project source and must only come from trusted authors. The renderer supports GitHub-flavored Markdown and derives table-of-contents links from the same parsed headings used to render the article.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Existing URLs
 
-## Deploy on Vercel
+`next.config.ts` permanently redirects `/posts/*` to `/notes/*`, `/case-studies/*` to `/work/*`, the old index pages to their replacements, and `/resume` to `/about`. `/resume.pdf` redirects to the restored PDF. Preserve or extend these mappings when changing slugs.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`/rss.xml`, `/privacy`, `/robots.txt` and `/sitemap.xml` remain available. RSS keeps the original `/posts/` GUIDs so existing subscribers do not receive duplicate entries; article links use `/notes/`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Before changing Next.js code, read the relevant installed guides in `node_modules/next/dist/docs/`, as required by `AGENTS.md`.

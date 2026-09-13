@@ -1,0 +1,163 @@
+---
+title: Laravel Wayfinder - Type-Safe API Calls Between Laravel and TypeScript
+summary: Explore Laravel Wayfinder, a tool that bridges your Laravel backend and TypeScript frontend with zero friction, automating the generation of fully-typed TypeScript functions
+image: /images/posts/laravel-wayfinder.png
+author: 'Pruthvisinh Rajput'
+publishedAt: '2025-04-03'
+featured: true
+---
+
+Laravel Wayfinder is a game-changing tool for developers working with Laravel
+and TypeScript. It automatically generates fully-typed, importable TypeScript
+functions for your Laravel controllers and routes, allowing seamless API calls
+between your Laravel backend and TypeScript frontend. Say goodbye to hardcoded
+URLs, manual syncs, and route parameter guessing. In this blog, we’ll walk
+through the installation, usage, and benefits of Laravel Wayfinder.
+
+Taylor Otwell officially announced Laravel Wayfinder on Twitter:
+
+> "Introducing Laravel Wayfinder: Seamlessly generate fully-typed TypeScript functions for your Laravel controllers and routes. No more hardcoded URLs or manual syncs! 🚀"  
+> [View Tweet](https://x.com/taylorotwell/status/1907511484961468698?t=pAjcogLwAE1b3g0duc7nog&s=19)
+
+---
+
+## The Challenge
+
+Developing applications that involve both a backend and frontend often comes
+with the challenge of syncing API endpoints. Common issues include:
+
+- Hardcoding URLs or manually managing routes.
+- Maintaining synchronization between the backend and frontend after changes.
+- Ensuring type safety between the client and server code.
+
+These problems can slow down development, increase the chances of errors, and
+lead to inconsistent experiences.
+
+---
+
+## The Solution: Laravel Wayfinder
+
+Laravel Wayfinder simplifies the process of integrating Laravel with TypeScript
+by generating fully-typed TypeScript functions for your controllers and routes.
+With Wayfinder, you no longer need to manually update URLs or worry about route
+changes causing inconsistencies in your frontend code. This tool seamlessly
+bridges your Laravel backend and TypeScript frontend with automatic updates.
+
+---
+
+## The Code
+
+To get started, here’s how to set up Laravel Wayfinder and generate TypeScript
+definitions for your routes and controller methods:
+
+### Installation
+
+Start by installing the Wayfinder package via Composer:
+
+```sh
+composer require laravel/wayfinder
+```
+
+Next, install the `vite-plugin-run` npm package to automatically watch for
+changes:
+
+```sh
+npm i -D vite-plugin-run
+```
+
+Update your `vite.config.js` to watch for changes to your routes and
+controllers:
+
+```ts
+import { run } from 'vite-plugin-run'
+
+export default defineConfig({
+  plugins: [
+    run([
+      {
+        name: 'wayfinder',
+        run: ['php', 'artisan', 'wayfinder:generate'],
+        pattern: ['routes/*.php', 'app/**/Http/**/*.php']
+      }
+    ])
+  ]
+})
+```
+
+### Generating TypeScript Definitions
+
+Once everything is set up, run the following command to generate TypeScript
+definitions for your routes and controller methods:
+
+```sh
+php artisan wayfinder:generate
+```
+
+By default, the generated files will be stored in the `resources/js` directory,
+but you can configure the path as needed.
+
+---
+
+## Why This Approach Works
+
+### 1. Type Safety
+
+Wayfinder automatically generates type-safe API calls, ensuring that your
+TypeScript code is always in sync with your Laravel backend. This eliminates the
+need for manual type declarations and reduces errors.
+
+### 2. No Hardcoded URLs
+
+Wayfinder resolves URLs automatically, so you don’t have to hardcode them in
+your frontend. The generated functions provide you with the correct URL and HTTP
+method for each controller route.
+
+### 3. Seamless Integration
+
+With Wayfinder, you can call your Laravel API endpoints directly as functions in
+your TypeScript code. This results in cleaner, more readable code and eliminates
+the need for manually managing API endpoints.
+
+### 4. Flexibility and Customization
+
+You can customize the generated TypeScript definitions by specifying paths or
+skipping certain types of generation (e.g., skipping actions or routes). This
+level of customization ensures that you only generate the code you need.
+
+---
+
+## Using Laravel Wayfinder
+
+Here's an example of how to use the generated functions in your TypeScript code:
+
+```ts
+import { show } from '@actions/App/Http/Controllers/PostController'
+
+const post = show(1) // { url: "/posts/1", method: "get" }
+```
+
+In this example, the `show` function returns an object with the resolved URL and
+HTTP method for the specified route. You can now use this function to make API
+calls seamlessly.
+
+---
+
+## Conclusion
+
+Laravel Wayfinder significantly streamlines the process of making type-safe API
+calls between your Laravel backend and TypeScript frontend. By automatically
+generating fully-typed TypeScript functions, Wayfinder eliminates the need for
+hardcoded URLs and manual route synchronization. It’s a must-have tool for any
+Laravel and TypeScript developer looking to improve their workflow and ensure
+consistency across their application.
+
+Start using Laravel Wayfinder today and experience the power of automatic
+type-safe API calls!
+
+---
+
+## Happy coding! 🚀
+
+**Note:** Laravel Wayfinder is still in beta, and the API is subject to change
+before the v1.0.0 release. Keep an eye on the [changelog](https://github.com/laravel/wayfinder/blob/main/CHANGELOG.md) for
+updates.

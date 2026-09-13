@@ -1,0 +1,213 @@
+---
+title: 'Automating Your Laravel Server on AWS with CloudFormation'
+summary: 'Stop manually configuring servers for your Laravel projects. This guide teaches you how to use AWS CloudFormation to automatically provision a secure, production-ready VPS on AWS.'
+image: /images/posts/aws-cloudformation-vps.png
+author: 'Pruthvisinh Rajput'
+publishedAt: '2025-08-17'
+featured: true
+---
+
+### Introduction
+
+So, you've built an amazing Laravel application. Now comes the next challenge: deploying it. Manually clicking through the AWS console to set up a server is a common first step, but it's slow, error-prone, and nearly impossible to replicate consistently for staging or future projects.
+
+In this guide, we'll skip the manual chaos. I'll show you how to embrace Infrastructure as Code (IaC) using AWS CloudFormation to define and launch the perfect server environment for your Laravel application. We'll create a secure, repeatable, and production-ready VPS with a single command.
+
+---
+
+## The Challenge with Manual Setups
+
+Manually provisioning resources in the AWS console is a common starting point, but it comes with several challenges:
+
+- **Error-Prone:** A single missed click or incorrect setting can lead to security vulnerabilities or a non-functional network.
+- **Inconsistent:** Replicating an environment exactly is nearly impossible, leading to "works on my dev environment" issues.
+- **Time-Consuming:** Setting up a VPC, subnets, route tables, and an EC2 instance by hand takes significant time and effort.
+- **No Versioning:** There’s no easy way to track changes, review infrastructure history, or roll back to a previous known-good state.
+
+---
+
+## The Solution: A CloudFormation Blueprint
+
+The solution is to treat your infrastructure like you treat your application code. AWS CloudFormation allows you to define all your AWS resources in a JSON or YAML file, known as a template. This template acts as a blueprint for your entire infrastructure stack, ensuring a consistent and automated deployment every time.
+
+We will create a single `stack.json` file that defines a secure network and launches an Ubuntu VPS within it.
+
+---
+
+## Our CloudFormation Blueprint: The `stack.json` File
+
+Before we look at the code, let's understand the components our blueprint will create:
+
+- **VPC (Virtual Private Cloud):** An isolated network slice in AWS to house our resources.
+- **Internet Gateway:** The doorway that allows our VPC to communicate with the internet.
+- **Public Subnet:** A specific IP address range within our VPC where we'll place our public-facing server. It's configured to automatically assign a public IP to new instances.
+- **Public Route Table & Default Route:** A set of rules that directs all outbound traffic from our subnet to the Internet Gateway.
+- **Security Group:** A virtual firewall to control traffic. We’ll allow access for SSH (port 22), HTTP (port 80), and a custom port (432).
+- **EC2 Instance:** Our Ubuntu 22.04 virtual server, using a `t2.micro` instance type for cost-effectiveness.
+
+Here’s the complete CloudFormation template. Create a file named `stack.json` and paste this content into it:
+
+```json
+{
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true
+      }
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {}
+    },
+    "InternetGatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "InternetGatewayId": { "Ref": "InternetGateway" }
+      }
+    },
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "CidrBlock": "10.0.0.0/24",
+        "AvailabilityZone": "us-east-1a",
+        "MapPublicIpOnLaunch": true
+      }
+    },
+    "PublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" }
+      }
+    },
+    "DefaultPublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "InternetGatewayAttachment",
+      "Properties": {
+        "RouteTableId": { "Ref": "PublicRouteTable" },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": { "Ref": "InternetGateway" }
+      }
+    },
+    "PublicSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "PublicSubnet" },
+        "RouteTableId": { "Ref": "PublicRouteTable" }
+      }
+    },
+    "MySecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allow SSH, HTTP, and Custom Port Access",
+        "VpcId": { "Ref": "VPC" },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 432,
+            "ToPort": 432,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "ImageId": "ami-053b0d53c279acc90",
+        "SecurityGroupIds": [{ "Ref": "MySecurityGroup" }],
+        "KeyName": "laravel-servers",
+        "SubnetId": { "Ref": "PublicSubnet" }
+      }
+    }
+  }
+}
+```
+
+> **Note:** The `ImageId` is for Ubuntu 22.04 in `us-east-1`. You may need to change this if you are in a different region. Also, ensure the `KeyName` (`laravel-servers`) matches an EC2 Key Pair you have already created in your AWS account.
+
+---
+
+## Bringing It to Life: Deploying the Stack
+
+With our `stack.json` blueprint ready, we can deploy it using either the AWS Console or the Command Line Interface (CLI).
+
+#### Using the AWS Console:
+
+1.  Navigate to the **CloudFormation** service in your AWS Console.
+2.  Click **Create stack** and choose **With new resources (standard)**.
+3.  Under **Prepare template**, select **Template is ready**, and then choose **Upload a template file**.
+4.  Upload your `stack.json` file and click **Next**.
+5.  Give your stack a name (e.g., `MyVPSServer`) and click **Next**.
+6.  Leave the options on the next page as default and click **Next**.
+7.  Review the details and check the acknowledgment box at the bottom, then click **Create stack**.
+
+#### Using the AWS CLI:
+
+For a faster, scriptable approach, use the AWS CLI with this single command:
+
+```bash
+aws cloudformation deploy \
+  --stack-name MyVPSServer \
+  --template-file stack.json
+```
+
+You can monitor the creation process in the **Events** tab of your stack in the AWS Console. It will go from `CREATE_IN_PROGRESS` to `CREATE_COMPLETE` in a few minutes.
+
+---
+
+## Accessing Your New Server
+
+Once the stack is complete, your EC2 instance is up and running.
+
+1.  **Find the Public IP:** Navigate to the **EC2** service in the AWS Console. Your new instance will be listed. Select it and find its "Public IPv4 address".
+
+2.  **Connect via SSH:** Open your terminal and use the following command:
+    ```bash
+    ssh -i path/to/your-key-pair.pem ubuntu@<public-ip-address>
+    ```
+    - Replace `path/to/your-key-pair.pem` with the path to the private key file corresponding to the `KeyName` you used.
+    - Replace `<public-ip-address>` with the IP you found in the previous step.
+
+You are now logged into your fresh Ubuntu 22.04 server!
+
+---
+
+## Why This Approach Is a Game-Changer
+
+### Clean and Declarative
+
+Your entire infrastructure is defined in one place. The template is easy to read, understand, and share with your team.
+
+### Consistent and Repeatable
+
+Need a staging environment identical to production? Just deploy the same template with a different stack name. This eliminates configuration drift and ensures consistency.
+
+### Version Control for Infrastructure
+
+You can commit your `stack.json` file to a Git repository. This allows you to track changes over time, review pull requests for infrastructure updates, and roll back to a previous version if something goes wrong.
+
+---
+
+## Conclusion
+
+By using AWS CloudFormation, you've taken a massive step from being a cloud user to a cloud architect. You now have a powerful, repeatable, and version-controlled method for provisioning a secure network and VPS. This declarative approach not only saves time but also dramatically reduces the risk of human error, allowing you to build and scale with confidence.
+
+**Happy cloud crafting! 🚀**

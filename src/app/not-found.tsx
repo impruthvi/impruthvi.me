@@ -3,7 +3,7 @@ import { Container, Label } from "@/components/ui";
 
 const links = [
   { label: "Back home", href: "/", current: true },
-  { label: "Selected work", href: "/" },
+  { label: "Selected work", href: "/#work" },
   { label: "Field notes", href: "/notes" },
 ];
 
@@ -11,9 +11,9 @@ export default function NotFound() {
   return (
     <Container className="flex min-h-[70vh] flex-col justify-center py-16">
       <div className="flex flex-wrap items-baseline gap-x-7 gap-y-2">
-        <span className="font-display text-[clamp(5rem,18vw,12.5rem)] leading-[0.9] font-black tracking-[-0.05em]">
+        <h1 className="font-display text-[clamp(5rem,18vw,12.5rem)] leading-[0.9] font-black tracking-[-0.05em]">
           404
-        </span>
+        </h1>
         <span className="font-serif text-muted text-[clamp(2.25rem,7vw,4.5rem)] leading-none italic">
           not found
         </span>

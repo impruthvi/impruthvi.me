@@ -11,19 +11,19 @@ const channels = [
     label: "Email — best",
     value: site.email,
     href: `mailto:${site.email}`,
-    note: "Replies within a day, usually the same evening.",
+    note: "For project enquiries, technical questions or a conversation.",
   },
   {
-    label: "A call",
-    value: "Book 30 minutes",
-    href: "#",
-    note: `Weekdays 10:00 — 19:00 IST (${site.timezone}).`,
-  },
-  {
-    label: "Elsewhere",
-    value: "GitHub · LinkedIn",
+    label: "Open source",
+    value: "GitHub",
     href: site.socials[0].href,
-    note: "Résumé available as a PDF on request.",
+    note: "Packages, contributions and projects I’m building.",
+  },
+  {
+    label: "Connect",
+    value: "LinkedIn",
+    href: site.socials[1].href,
+    note: "Work history and professional updates.",
   },
 ];
 
@@ -45,7 +45,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <dl className="mt-14 grid gap-0 sm:grid-cols-2 lg:grid-cols-3">
+      <dl className="mt-14 grid gap-x-8 sm:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr]">
         {channels.map((channel) => (
           <div key={channel.label} className="border-ink flex flex-col gap-2.5 border-t py-6">
             <dt>
@@ -54,7 +54,7 @@ export default function ContactPage() {
             <dd className="flex flex-col gap-2.5">
               <a
                 href={channel.href}
-                className="hover:text-muted text-[1.625rem] leading-8 font-medium tracking-[-0.02em] transition-colors"
+                className="hover:text-muted text-[1.375rem] leading-8 font-medium tracking-[-0.02em] wrap-anywhere transition-colors"
               >
                 {channel.value}
               </a>

@@ -1,0 +1,137 @@
+---
+title: "BrandArc"
+tagline: "AI-powered brand identity generator — strategy, logos, colors, and typography in under 30 minutes"
+category: "AI / SaaS"
+period: "Mar 2026 – Present"
+role: "Solo Founder & Full-Stack Developer"
+metrics:
+  - label: "AI Agents"
+    value: "4 Chained"
+  - label: "Tests"
+    value: "391 (1,309 assertions)"
+  - label: "Generation Time"
+    value: "~30 min → concurrent"
+  - label: "Price Point"
+    value: "₹1,999"
+techStack:
+  - Laravel 12
+  - React 19
+  - Inertia.js v2
+  - Tailwind CSS v4
+  - PostgreSQL
+  - GPT-4o-mini
+  - DALL-E 3
+  - Razorpay
+  - Pest
+  - Laravel Fortify
+  - PostHog
+url: "https://brandarc.dev"
+publishedAt: "2026-03-01"
+---
+
+## The Challenge
+
+Indian startups face a harsh branding gap: agencies charge ₹50K+ and take 4–6 weeks, freelancers are unreliable, and DIY tools like Canva don't produce cohesive brand identities. Most founders launch with inconsistent branding — mismatched colors, generic logos, no brand strategy — which hurts credibility with investors and customers.
+
+BrandArc automates the entire brand identity process using a chained AI pipeline. A founder answers 5 questions about their business, and the system generates a professional brand kit: positioning strategy, 3 logo variants, a 5-color palette, and typography pairing — all cohesive and industry-optimized.
+
+## My Role
+
+Solo founder and full-stack developer — I designed, built, and ship the entire product end-to-end:
+
+- Product strategy and market positioning
+- System architecture and AI pipeline design
+- Frontend (React 19 + Inertia.js v2)
+- Backend (Laravel 12 + PostgreSQL)
+- Payments integration (Razorpay)
+- Infrastructure and deployment
+- Testing (391 tests, 1,309 assertions)
+- SEO and analytics
+
+## Technical Decisions
+
+### Why chained AI agents?
+
+A brand identity isn't random outputs stitched together — strategy must inform the color palette, and the palette must inform logo generation. Chaining 4 agents ensures every element is cohesive. The strategy agent's output (industry, tone, personality) feeds directly into palette and typography agents, which then feed the logo agent.
+
+### Why Inertia.js v2?
+
+Inertia gives a full SPA experience while keeping Laravel's routing, middleware, and controllers intact — no separate API layer to build or maintain. For a solo founder, this cuts development time significantly without sacrificing UX quality.
+
+### Why Razorpay?
+
+The Indian market needs UPI, cards, net banking, and wallets — Stripe doesn't support UPI. Razorpay's UPI flow is async and webhook-based, requiring polling on the frontend and idempotent verification on the backend to handle network interruptions during payment.
+
+## AI Pipeline Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                   BRAND GENERATION PIPELINE                   │
+│                                                               │
+│  5-Step Wizard ──→ CreateBrand Action ──→ GenerateBrand Job   │
+│                                              │                │
+│                                    ┌─────────┴──────────┐    │
+│                                    ▼                     │    │
+│                           BrandStrategyAgent             │    │
+│                            (GPT-4o-mini)                 │    │
+│                                    │                     │    │
+│                          ┌─────────┴─────────┐           │    │
+│                          ▼                   ▼           │    │
+│                   BrandPaletteAgent    BrandTypographyAgent   │
+│                    (concurrent)        (concurrent)       │    │
+│                          └─────────┬─────────┘           │    │
+│                                    ▼                     │    │
+│                           BrandLogoAgent                 │    │
+│                            (DALL-E 3)                    │    │
+│                                    │                     │    │
+│                                    ▼                     │    │
+│                         ProcessLogoFormats               │    │
+│                     (PNG → transparent → SVG → PDF)       │    │
+│                                    │                     │    │
+│                                    ▼                     │    │
+│                       Notify User (email)                │    │
+│                                                          │    │
+│  Supports: Cancel mid-generation, Retry on failure,      │    │
+│            Concurrent palette+typography, 3 retry         │    │
+│            attempts with exponential backoff              │    │
+└──────────────────────────────────────────────────────────────┘
+```
+
+The pipeline runs asynchronously via Laravel queues. Each agent has structured JSON output schemas enforced by the AI SDK, and cancellation checkpoints between each step prevent half-generated brands from corrupting state.
+
+## Freemium & Payments
+
+### Tier Breakdown
+
+- **Free tier** — 1 brand generation with watermarked logos (512px), no downloads
+- **Pro tier** — ₹1,999 one-time payment for 3 regenerations, high-res logos, ZIP/PDF downloads, and SVG export
+
+### Upgrade Flow
+
+Existing free brands can be upgraded to Pro for ₹499 — watermarks are removed, logos are re-generated at full resolution, and all download formats unlock.
+
+### Payment Security
+
+Razorpay signature verification on every webhook with replay attack prevention. UPI payments are fully async — the frontend polls for confirmation while the backend handles idempotent webhook processing.
+
+## Engineering Highlights
+
+- **391 tests, 1,309 assertions** — comprehensive coverage with Pest v4
+- **22 Action classes** — single-purpose pattern keeping controllers thin
+- **PHPStan Level 5** (bleeding edge) + Pint, ESLint, and Prettier
+- **7 JSON-LD schemas** — dynamic sitemap, robots.txt, and OG image generation
+- **26 Inertia/React pages** — skeleton loaders, animations, and dark mode throughout
+- **10 Eloquent models** — with factories, scopes, and authorization policies
+- **2FA/TOTP authentication** — login, register, email verify, password reset, profile management
+
+## What I Learned
+
+1. **Chaining AI agents requires careful state management** — Each agent's output feeds the next, so partial failures mid-pipeline need graceful handling. I built cancellation checkpoints between each agent and used database transactions to prevent half-generated brands.
+
+2. **Freemium pricing for AI products is tricky** — AI generation has real per-unit cost (OpenAI API calls). The free tier must be constrained enough to drive upgrades but generous enough to demonstrate value. Watermarking + resolution limits achieved this balance.
+
+3. **Concurrent AI calls cut latency ~40%** — Running palette and typography agents in parallel (they only depend on strategy, not each other) reduced total generation time significantly.
+
+4. **Indian payment integration has unique challenges** — Razorpay's UPI flow is async (webhook-based), requiring polling on the frontend and idempotent verification on the backend to handle network interruptions during payment.
+
+5. **Building product is the easy part** — A well-engineered product with zero users is worth nothing. The revised roadmap front-loads analytics, SEO, and retention mechanics before adding more features.

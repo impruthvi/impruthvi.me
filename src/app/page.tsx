@@ -1,29 +1,31 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
-import { projects } from "@/content/projects";
-import { notes } from "@/content/notes";
+import { getCaseStudies, getPosts, workYearRange } from "@/lib/content";
 import { Band, Chip, Container, Label, SectionHeader } from "@/components/ui";
 import { WorkRow } from "@/components/work-row";
 
 const practice = [
   {
     n: "01",
-    title: "Money movement",
-    body: "Subscriptions, dunning, invoicing, refunds. Idempotency and reconciliation done properly, because finance will find out if they aren't.",
+    title: "Product engineering",
+    body: "Healthcare, property and business platforms. Laravel and React applications with payments, role-based access and the workflows that connect them.",
   },
   {
     n: "02",
-    title: "Internal tooling",
-    body: "Admin panels and ops consoles the support team actually likes. Fewer tickets, fewer manual database edits at 1am.",
+    title: "Developer tools",
+    body: "Open-source email libraries, offline billing tests and Laravel starter kits. Tools built from problems I run into while shipping software.",
   },
   {
     n: "03",
     title: "Making it fast",
-    body: "Query plans, N+1s, cache layers, bundle budgets. Measured before and after — no vibes-based optimisation.",
+    body: "Query profiling, eager loading, Redis caching and queue workers. Performance improvements grounded in the applications and case studies below.",
   },
 ];
 
 export default function HomePage() {
+  const studies = getCaseStudies();
+  const posts = getPosts().slice(0, 3);
+
   return (
     <>
       <Container className="pt-16 pb-14 lg:pt-22 lg:pb-16">
@@ -56,20 +58,22 @@ export default function HomePage() {
         </div>
       </Container>
 
-      <Container className="pb-20 lg:pb-24">
-        <SectionHeader
-          label="Selected work"
-          aside={`2021 — 2026 / ${String(projects.length).padStart(2, "0")} case studies`}
-        />
-        {projects.map((project, i) => (
-          <WorkRow key={project.slug} project={project} index={i} />
-        ))}
-      </Container>
+      <section id="work" className="scroll-mt-8">
+        <Container className="pb-20 lg:pb-24">
+          <SectionHeader
+            label="Selected work"
+            aside={`${workYearRange(studies)} / ${String(studies.length).padStart(2, "0")} case studies`}
+          />
+          {studies.map((study, i) => (
+            <WorkRow key={study.slug} study={study} index={i} />
+          ))}
+        </Container>
+      </section>
 
       <Band className="py-20 lg:py-24">
         <div className="flex flex-col items-start justify-between gap-4 lg:flex-row">
           <h2 className="text-h2 max-w-[39rem] font-black tracking-[-0.035em]">
-            Hired for three kinds of problem.
+            Three threads through my work.
           </h2>
           <Label tone="on-band" className="lg:pt-3.5">
             Practice
@@ -101,28 +105,27 @@ export default function HomePage() {
           <div className="flex flex-col items-start gap-3.5 lg:w-[22rem] lg:shrink-0">
             <Label tone="ink">Field notes</Label>
             <p className="text-muted text-base leading-[1.625rem]">
-              Short write-ups on things that broke and what fixed them.
+              Notes on Laravel, React, infrastructure and the tools I build.
             </p>
-            <Link
-              href="/notes"
-              className="label border-ink mt-1 border-b pb-1"
-            >
+            <Link href="/notes" className="label border-ink mt-1 border-b pb-1">
               All notes
             </Link>
           </div>
 
           <div className="border-ink flex-1 border-t">
-            {notes.slice(0, 3).map((note) => (
+            {posts.map((post) => (
               <Link
-                key={note.slug}
-                href={`/notes/${note.slug}`}
+                key={post.slug}
+                href={`/notes/${post.slug}`}
                 className="border-rule flex flex-col gap-2 border-b py-5 sm:flex-row sm:items-center sm:gap-8"
               >
-                <Label className="sm:w-[6.5rem] sm:shrink-0">{note.date}</Label>
+                <Label className="sm:w-[6.5rem] sm:shrink-0">
+                  {post.publishedAt}
+                </Label>
                 <span className="flex-1 text-lg font-medium tracking-[-0.01em]">
-                  {note.title}
+                  {post.title}
                 </span>
-                <Label className="sm:w-14 sm:shrink-0">{note.readingTime}</Label>
+                <Label className="sm:w-14 sm:shrink-0">{post.readingTime}</Label>
               </Link>
             ))}
           </div>

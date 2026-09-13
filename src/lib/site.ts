@@ -6,12 +6,12 @@ export const site = {
   timezone: "UTC+5:30",
   email: "pruthvirajput97@gmail.com",
   description:
-    "Full-stack engineer working on payments, billing and internal tooling for teams that can't afford downtime.",
-  availability: "Open to work — Q2 2026",
+    "Full-stack engineer building Laravel, Node.js and React applications, from healthcare and property platforms to open-source developer tools.",
+  availability: "Software Engineer at Ricefwtech",
   socials: [
     { label: "GitHub", href: "https://github.com/impruthvi" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/impruthvi" },
-    { label: "Resume (PDF)", href: "/resume.pdf" },
+    { label: "Resume (PDF)", href: "/Pruthvisinh_Rajput.pdf" },
   ],
   nav: [
     { label: "Work", href: "/" },

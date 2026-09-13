@@ -1,44 +1,57 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProject, projects } from "@/content/projects";
+import { getCaseStudies, getCaseStudy } from "@/lib/content";
+import { Mdx } from "@/components/mdx";
 import { ArrowLeft, ArrowUpRight, Band, Container, Label } from "@/components/ui";
 
 export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
+  return getCaseStudies().map((study) => ({ slug: study.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/work/[slug]">) {
-  const project = getProject((await params).slug);
-  if (!project) return {};
-  return { title: project.name, description: project.summary };
+  const study = getCaseStudy((await params).slug);
+  if (!study) return {};
+  return {
+    title: study.title,
+    description: study.tagline,
+    alternates: { canonical: `/work/${study.slug}` },
+    openGraph: { title: study.title, description: study.tagline, url: `/work/${study.slug}` },
+  };
 }
 
-export default async function ProjectPage({ params }: PageProps<"/work/[slug]">) {
+export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]">) {
   const { slug } = await params;
-  const project = getProject(slug);
-  if (!project) notFound();
+  const study = getCaseStudy(slug);
+  if (!study) notFound();
 
-  const next = projects[(projects.findIndex((p) => p.slug === slug) + 1) % projects.length];
+  const studies = getCaseStudies();
+  const next = studies[(studies.findIndex((s) => s.slug === slug) + 1) % studies.length];
+  const headline = study.metrics[0];
+  // The headline metric already sits in the header; the band shows the rest.
+  const bandMetrics = study.metrics.slice(1);
 
   return (
     <>
       <Container className="pt-14 pb-12 lg:pt-16">
-        <Link href="/" className="text-muted hover:text-ink flex items-center gap-2.5 transition-colors">
+        <Link
+          href="/"
+          className="text-muted hover:text-ink flex items-center gap-2.5 transition-colors"
+        >
           <ArrowLeft />
           <Label>All work</Label>
         </Link>
 
         <div className="mt-9 flex flex-col justify-between gap-10 lg:flex-row lg:items-end lg:gap-20">
-          <div className="flex flex-col gap-5 lg:max-w-[51rem]">
-            <h1 className="text-h1 font-black tracking-[-0.035em]">{project.name}</h1>
-            <p className="text-muted text-lead">{project.summary}</p>
+          <div className="flex min-w-0 flex-col gap-5 lg:max-w-[51rem]">
+            <h1 className="text-h1 font-black tracking-[-0.035em]">{study.title}</h1>
+            <p className="text-muted text-lead">{study.tagline}</p>
           </div>
-          {project.metric ? (
+          {headline ? (
             <div className="flex flex-col gap-1 lg:pb-2">
               <span className="text-h2 leading-none font-black tracking-[-0.03em]">
-                {project.metric.value}
+                {headline.value}
               </span>
-              <Label>{project.metric.label}</Label>
+              <Label>{headline.label}</Label>
             </div>
           ) : null}
         </div>
@@ -47,62 +60,72 @@ export default async function ProjectPage({ params }: PageProps<"/work/[slug]">)
       <Container className="pb-14">
         <dl className="grid grid-cols-2 lg:grid-cols-4">
           {[
-            ["Role", project.role],
-            ["Timeline", project.timeline],
-            ["Team", project.team],
-            ["Stack", project.stack.join(", ")],
+            ["Role", study.role],
+            ["Period", study.period],
+            ["Category", study.category],
+            ["Live", study.url ? new URL(study.url).host : "—"],
           ].map(([term, value]) => (
             <div key={term} className="border-ink flex flex-col gap-2 border-t py-5">
               <dt>
                 <Label>{term}</Label>
               </dt>
-              <dd className="text-[1.0625rem] font-medium">{value}</dd>
+              <dd className="text-[1.0625rem] font-medium">
+                {term === "Live" && study.url ? (
+                  <a
+                    href={study.url}
+                    className="decoration-accent underline decoration-2 underline-offset-4"
+                  >
+                    {value}
+                  </a>
+                ) : (
+                  value
+                )}
+              </dd>
             </div>
           ))}
         </dl>
       </Container>
 
-      <Container className="pb-10 lg:pb-16">
-        {project.sections.map((section) => (
-          <section
-            key={section.label}
-            className="border-rule flex flex-col gap-8 border-t py-8 lg:flex-row lg:gap-20 lg:py-12"
-          >
-            <div className="lg:w-[19.5rem] lg:shrink-0">
-              <Label tone="ink">{section.label}</Label>
-            </div>
-            <div className="flex max-w-[43.5rem] flex-col gap-6">
-              <h2 className="text-h3 leading-10 font-bold tracking-[-0.025em]">
-                {section.heading}
-              </h2>
-              {section.body.map((paragraph) => (
-                <p key={paragraph} className="text-prose text-body">
-                  {paragraph}
-                </p>
+      <Container className="pb-12 lg:pb-16">
+        <div className="flex flex-col gap-10 lg:flex-row lg:gap-20">
+          <div className="flex flex-col gap-4 lg:sticky lg:top-12 lg:h-fit lg:w-[19.5rem] lg:shrink-0">
+            <Label tone="ink">Stack</Label>
+            <ul className="flex flex-col">
+              {study.techStack.map((tech) => (
+                <li
+                  key={tech}
+                  className="border-rule border-t py-2 text-[1.0625rem] leading-6 font-medium"
+                >
+                  {tech}
+                </li>
               ))}
-            </div>
-          </section>
-        ))}
+            </ul>
+          </div>
+
+          <article className="mdx-content max-w-measure flex min-w-0 flex-1 flex-col gap-6">
+            <Mdx source={study.body} />
+          </article>
+        </div>
       </Container>
 
-      {project.results.length > 0 ? (
+      {bandMetrics.length > 0 ? (
         <Band className="py-16 lg:py-18">
           <div className="flex flex-col justify-between gap-10 lg:flex-row lg:items-end lg:gap-12">
             <div className="flex flex-col gap-3.5 lg:w-80 lg:shrink-0">
-              <Label tone="on-band">04 / Result</Label>
+              <Label tone="on-band">Result</Label>
               <h2 className="text-h3 leading-9 font-black tracking-[-0.03em]">
-                Measured against the 90 days before launch.
+                What it added up to.
               </h2>
             </div>
-            <div className="flex flex-wrap gap-10 lg:gap-12">
-              {project.results.map((result, i) => (
-                <div key={result.label} className="flex flex-col gap-1.5">
+            <div className="grid min-w-0 flex-1 gap-10 sm:grid-cols-2 lg:gap-12">
+              {bandMetrics.map((metric, i) => (
+                <div key={metric.label} className="flex flex-col gap-1.5">
                   <span
-                    className={`text-h2 leading-none font-black tracking-[-0.035em] ${i === 0 ? "text-accent" : ""}`}
+                    className={`text-h3 leading-tight font-black tracking-[-0.035em] wrap-anywhere ${i === 0 ? "text-accent" : ""}`}
                   >
-                    {result.value}
+                    {metric.value}
                   </span>
-                  <Label tone="on-band">{result.label}</Label>
+                  <Label tone="on-band">{metric.label}</Label>
                 </div>
               ))}
             </div>
@@ -111,10 +134,13 @@ export default async function ProjectPage({ params }: PageProps<"/work/[slug]">)
       ) : null}
 
       <Container className="py-14 lg:py-16">
-        <Link href={`/work/${next.slug}`} className="group flex items-end justify-between gap-8">
-          <span className="flex flex-col gap-3.5">
+        <Link
+          href={`/work/${next.slug}`}
+          className="group flex items-end justify-between gap-8"
+        >
+          <span className="flex min-w-0 flex-1 flex-col gap-3.5">
             <Label>Next case study</Label>
-            <span className="text-h2 font-black tracking-[-0.035em]">{next.name}</span>
+            <span className="text-h2 font-black tracking-[-0.035em] wrap-anywhere">{next.title}</span>
           </span>
           <ArrowUpRight className="size-8 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </Link>

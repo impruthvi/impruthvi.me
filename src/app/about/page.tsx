@@ -1,39 +1,16 @@
+import Image from "next/image";
+import portrait from "../../../public/images/authors/impruthvi.jpg";
 import { site } from "@/lib/site";
-import { Container, Label, SectionHeader } from "@/components/ui";
+import { experienceData } from "@/data/experience";
+import { skillsData } from "@/data/skills";
+import { openSourceData } from "@/data/open-source";
+import { educationData } from "@/data/education";
+import { ArrowUpRight, Container, Label, SectionHeader } from "@/components/ui";
 
 export const metadata = {
   title: "About",
   description: site.description,
 };
-
-// PLACEHOLDER — replace with real history.
-const jobs = [
-  {
-    period: "2023 — Now",
-    company: "RICEFW Technologies",
-    title: "Senior full-stack engineer",
-    body: "Owned billing and entitlements across four products. Built the dunning system, the shared feature-gating service, and the internal ops console support runs on.",
-  },
-  {
-    period: "2021 — 2023",
-    company: "Dariya Systems",
-    title: "Full-stack engineer",
-    body: "Port operations tooling. Shipped an offline-first field app used daily by dock crews, plus the sync layer that reconciles conflicting edits from patchy connections.",
-  },
-  {
-    period: "2020 — 2021",
-    company: "SAP Integration Practice",
-    title: "ABAP / RICEF developer",
-    body: "Reports, interfaces, conversions, enhancements and forms for enterprise rollouts. Learned what happens when a batch job silently fails for three days.",
-  },
-];
-
-const toolkit = [
-  { group: "Languages", items: ["PHP", "TypeScript", "Python", "SQL", "ABAP"] },
-  { group: "Backend", items: ["Laravel", "Node / Nest", "Postgres", "Redis", "Stripe"] },
-  { group: "Frontend", items: ["React", "Next.js", "Tailwind", "React Native", "Motion"] },
-  { group: "Infra & ops", items: ["Docker", "GitHub Actions", "Vercel / Fly", "Sentry", "Grafana"] },
-];
 
 export default function AboutPage() {
   return (
@@ -43,70 +20,128 @@ export default function AboutPage() {
           <div className="flex flex-col gap-8 lg:max-w-[43.5rem]">
             <Label>About</Label>
             <h1 className="text-h1 font-black tracking-[-0.035em]">
-              Six years of shipping the parts nobody demos.
+              From the database to the details.
             </h1>
             <p className="text-prose text-body">
-              I started in SAP integration work — RICEF objects, IDocs, the kind
-              of software where a bad deploy shows up in someone&rsquo;s payroll.
-              That taught me to respect correctness before cleverness, and
-              I&rsquo;ve carried it into every product team since.
+              I&rsquo;m Pruthvisinh, a full-stack engineer based in Ahmedabad.
+              I build Laravel, Node.js and React applications for healthcare,
+              property management and business software. My work spans payment
+              integrations, database performance and the interfaces people use
+              every day.
             </p>
             <p className="text-prose text-body">
-              Today I build billing systems, internal tools and the occasional
-              offline-first mobile app. I like problems where the hard part is
-              invisible: reconciliation, idempotency, sync conflicts, the query
-              that only falls over at 40,000 rows.
+              At Ricefwtech, I work on architecture, code reviews and product
+              improvements across distributed teams. Outside that work, I build
+              products including BrandArc and BizNetworkPro, contribute to the
+              Laravel ecosystem, and write about the tools and decisions behind
+              those projects.
             </p>
           </div>
 
           <div className="flex flex-col gap-3 lg:w-[22rem] lg:shrink-0">
-            {/* TODO — swap for a real portrait via next/image. */}
-            <div className="bg-wash flex aspect-4/5 items-end p-5">
-              <Label>Portrait — 4:5</Label>
-            </div>
-            <Label>Ahmedabad, Gujarat — 2026</Label>
+            <Image
+              src={portrait}
+              alt="Pruthvisinh Rajput"
+              sizes="(min-width: 1024px) 352px, (min-width: 640px) 448px, calc(100vw - 48px)"
+              className="bg-wash aspect-4/5 w-full max-w-md object-cover"
+              preload
+            />
+            <Label>
+              {site.location} — {site.timezone}
+            </Label>
           </div>
         </div>
       </Container>
 
       <Container className="pb-16">
-        <SectionHeader label="Experience" aside="2020 — present" />
-        {jobs.map((job) => (
+        <SectionHeader label="Experience" aside={`${experienceData.length} roles`} />
+        {experienceData.map((job) => (
           <div
-            key={job.company}
+            key={`${job.company}-${job.date}`}
             className="border-rule flex flex-col gap-4 border-b py-7 lg:flex-row lg:gap-8"
           >
-            <Label className="lg:w-40 lg:shrink-0 lg:pt-1.5">{job.period}</Label>
-            <div className="flex flex-col gap-1.5 lg:w-[27.5rem] lg:shrink-0">
-              <h3 className="text-lead font-bold tracking-[-0.02em]">{job.company}</h3>
-              <Label>{job.title}</Label>
+            <div className="flex flex-col gap-1.5 lg:w-44 lg:shrink-0 lg:pt-1.5">
+              <Label>{job.date}</Label>
+              <Label>{job.location}</Label>
             </div>
-            <p className="text-prose max-w-[34.5rem] text-[1.0625rem] leading-7">
-              {job.body}
-            </p>
+            <div className="flex flex-col gap-1.5 lg:w-[21rem] lg:shrink-0">
+              <h3 className="text-lead font-bold tracking-[-0.02em]">
+                {job.company}
+              </h3>
+              <Label>{job.position}</Label>
+            </div>
+            <div className="flex max-w-[38rem] flex-col gap-3">
+              <ul className="text-prose flex flex-col gap-2 text-[1.0625rem] leading-7">
+                {job.highlights.map((highlight) => (
+                  <li key={highlight}>{highlight}</li>
+                ))}
+              </ul>
+              <Label className="pt-1">{job.techStack.join(" · ")}</Label>
+            </div>
           </div>
         ))}
       </Container>
 
-      <Container className="pb-20 lg:pb-24">
+      <Container className="pb-16">
+        <SectionHeader label="Open source" aside="Packages and contributions" />
+        {openSourceData.map((item) => (
+          <a
+            key={item.url}
+            href={item.url}
+            className="group border-rule flex flex-col gap-3 border-b py-6 lg:flex-row lg:items-start lg:gap-8"
+          >
+            <Label className="lg:w-44 lg:shrink-0 lg:pt-1.5">{item.type}</Label>
+            <div className="flex max-w-[38rem] flex-1 flex-col gap-2">
+              <h3 className="text-lead font-bold tracking-[-0.02em]">
+                {item.name}
+              </h3>
+              <p className="text-prose text-[1.0625rem] leading-7">
+                {item.description}
+              </p>
+              <Label className="pt-1">{item.techStack.join(" · ")}</Label>
+            </div>
+            <ArrowUpRight className="size-5 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 max-lg:hidden lg:mt-1.5" />
+          </a>
+        ))}
+      </Container>
+
+      <Container className="pb-16">
         <SectionHeader label="Toolkit" aside="What I reach for first" />
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          {toolkit.map((column) => (
-            <div key={column.group} className="flex flex-col gap-4">
-              <Label>{column.group}</Label>
+          {skillsData.map((column) => (
+            <div key={column.category} className="flex flex-col gap-4">
+              <Label>{column.category}</Label>
               <ul className="flex flex-col">
-                {column.items.map((item) => (
+                {column.skills.map((skill) => (
                   <li
-                    key={item}
+                    key={skill}
                     className="border-rule border-t py-2.5 text-[1.0625rem] leading-[1.625rem] font-medium"
                   >
-                    {item}
+                    {skill}
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
+      </Container>
+
+      <Container className="pb-20 lg:pb-24">
+        <SectionHeader label="Education" />
+        {educationData.map((entry) => (
+          <div
+            key={entry.institution}
+            className="border-rule flex flex-col gap-2 border-b py-6 lg:flex-row lg:items-baseline lg:gap-8"
+          >
+            <Label className="lg:w-44 lg:shrink-0">{entry.date}</Label>
+            <div className="flex flex-col gap-1.5">
+              <h3 className="text-lead font-bold tracking-[-0.02em]">
+                {entry.institution}
+              </h3>
+              <Label>{entry.degree}</Label>
+            </div>
+          </div>
+        ))}
       </Container>
     </>
   );

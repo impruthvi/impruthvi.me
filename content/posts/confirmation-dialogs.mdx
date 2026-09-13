@@ -1,0 +1,216 @@
+---
+  title: Mastering Confirmation Dialogs in React and Next.js - A Hook-Based Approach
+  summary: Learn how to create a reusable confirmation dialog in React and Next.js using a custom hook.
+  image: /images/posts/confirmation-dialogs.webp
+  author: 'Pruthvisinh Rajput'
+  publishedAt: '2024-11-30'
+---
+
+When building user interfaces, confirmation dialogs play a critical role in
+ensuring users don’t accidentally perform destructive actions. However, managing
+these dialogs can become messy without proper structure. In this blog, I’ll walk
+you through creating a reusable confirmation dialog in React and Next.js using a
+custom hook—an elegant and scalable solution for modern applications.
+
+---
+
+## The Challenge
+
+Managing confirmation dialogs traditionally involves inline state management and
+repetitive code, especially when used across multiple components. This approach:
+
+- Clutters components with unnecessary state and logic.
+- Lacks reusability, leading to inconsistent designs.
+- Makes scaling and maintenance challenging.
+
+---
+
+## The Solution: A Reusable Hook
+
+React’s hooks allow us to encapsulate stateful logic, making it easy to create
+reusable, clean, and maintainable solutions. Let’s introduce `useConfirm`, a
+custom hook that simplifies the process of implementing confirmation dialogs.
+
+---
+
+## The Code
+
+Here’s the complete implementation of the `useConfirm` hook and the dialog
+component:
+
+```tsx
+import { useState } from 'react'
+
+import { Button, type ButtonProps } from '@/components/ui/button'
+import { ResponsiveModal } from '@/components/responsive-modal'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+
+export const useConfirm = (
+  title: string,
+  message: string,
+  variant: ButtonProps['variant'] = 'primary'
+): [() => JSX.Element, () => Promise<unknown>] => {
+  const [promise, setPromise] = useState<{
+    resolve: (value: boolean) => void
+  } | null>(null)
+
+  const confirm = () => {
+    return new Promise(resolve => {
+      setPromise({ resolve })
+    })
+  }
+
+  const handleClose = () => {
+    setPromise(null)
+  }
+
+  const handleConfirm = () => {
+    promise?.resolve(true)
+    handleClose()
+  }
+
+  const handleCancel = () => {
+    promise?.resolve(false)
+    handleClose()
+  }
+
+  const ConfirmDialog = () => (
+    <ResponsiveModal open={!!promise} onOpenChange={handleClose}>
+      <Card className='h-full w-full border-none shadow-none'>
+        <CardContent className='pt-8'>
+          <CardHeader className='p-0'>
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{message}</CardDescription>
+          </CardHeader>
+          <div className='flex w-full flex-col items-center justify-end gap-x-2 gap-y-2 pt-4 lg:flex-row'>
+            <Button
+              onClick={handleCancel}
+              variant={'outline'}
+              className='w-full lg:w-auto'
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              variant={variant}
+              className='w-full lg:w-auto'
+            >
+              Confirm
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </ResponsiveModal>
+  )
+
+  return [ConfirmDialog, confirm]
+}
+```
+
+## Why This Approach Works
+
+### 1. Clean Separation of Concerns
+
+The `useConfirm` hook encapsulates both the UI and state logic, keeping them
+isolated from the main components. This reduces clutter and ensures that your
+components remain focused on their primary responsibilities.
+
+### 2. Reusable and Customizable
+
+The `useConfirm` hook is designed with flexibility in mind. You can:
+
+- Change the **title** and **message** to suit different contexts.
+- Adjust the **button styles** using the `variant` prop for various actions
+  (e.g., primary, destructive, or outline).
+
+This allows you to reuse the dialog across different parts of your application
+without duplicating code.
+
+### 3. Scalable Design
+
+By abstracting the confirmation dialog into a hook, this approach ensures
+consistency and maintainability across your application. Even in projects with
+multiple confirmation dialogs, you can rely on the same logic and styling,
+making it easy to scale.
+
+## Using the Hook
+
+Here’s an example of how to use useConfirm in a component:
+
+```tsx
+const App = () => {
+  const [ConfirmDialog, confirm] = useConfirm(
+    'Delete Item',
+    'Are you sure you want to delete this item?',
+    'destructive'
+  )
+
+  const handleDelete = async () => {
+    const isConfirmed = await confirm()
+    if (isConfirmed) {
+      console.log('Item deleted')
+      // Perform your delete operation here
+    } else {
+      console.log('Deletion canceled')
+    }
+  }
+
+  return (
+    <div>
+      <Button onClick={handleDelete} variant='destructive'>
+        Delete Item
+      </Button>
+      <ConfirmDialog />
+    </div>
+  )
+}
+```
+
+## Why This Approach Works
+
+### Clean Separation of Concerns
+
+The UI and state logic are isolated in the `useConfirm` hook, reducing clutter
+in your components. This ensures each part of your application focuses on its
+primary responsibility.
+
+### Reusable and Customizable
+
+The `useConfirm` hook is designed for flexibility:
+
+- Easily adapt it for different actions by changing the **title** and
+  **message**.
+- Customize the dialog’s **button styles** using the `variant` prop (e.g.,
+  primary, destructive, outline).
+
+This reusability simplifies development and promotes consistency across your
+application.
+
+### Scalable Design
+
+This pattern is highly scalable, making it ideal for projects with multiple
+confirmation dialogs. By centralizing the logic and styling, you can ensure
+consistency and maintainability as your application grows.
+
+## Conclusion
+
+With React hooks, managing confirmation dialogs becomes a breeze. The
+`useConfirm` hook allows you to create **reusable**, **customizable**, and
+**scalable** dialogs without cluttering your components.
+
+If you found this guide helpful, feel free to share it with others! You can also
+explore the
+[GitHub repository](https://github.com/impruthvi/jira-clone/blob/main/src/hooks/use-confirm.tsx)
+for the complete codebase and more examples.
+
+## **Happy coding! 🚀**
+
+**Note:** This implementation uses components from the ShadCN component library.
+Please refer to the [ShadCN documentation](https://ui.shadcn.com/docs) for more
+details on the existing components used in this example.

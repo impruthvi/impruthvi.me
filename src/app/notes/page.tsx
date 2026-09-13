@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { notes, notesByYear } from "@/content/notes";
+import { getPosts, postsByYear } from "@/lib/content";
 import { Container, Label } from "@/components/ui";
 
 export const metadata = {
   title: "Field notes",
-  description: "Post-mortems, migration diaries and the odd opinion.",
+  description: "Articles on Laravel, React, infrastructure and open-source developer tools.",
 };
 
 export default function NotesPage() {
-  const groups = notesByYear();
+  const groups = postsByYear();
+  const total = getPosts().length;
 
   return (
     <>
@@ -17,21 +18,21 @@ export default function NotesPage() {
           <div className="flex flex-col gap-5">
             <Label>Field notes</Label>
             <h1 className="font-display text-h1 font-black tracking-[-0.035em] uppercase">
-              <span className="block">Things that</span>
+              <span className="block">Things I build.</span>
               <span className="block">
                 <span className="font-serif text-muted lowercase italic [font-size:0.86em]">
-                  broke,
+                  Lessons
                 </span>{" "}
-                and why.
+                I keep.
               </span>
             </h1>
           </div>
           <div className="flex flex-col gap-3.5 lg:w-[22rem] lg:shrink-0 lg:pb-3.5">
             <p className="text-prose text-[1.0625rem] leading-7">
-              Post-mortems, migration diaries and the odd opinion. No tutorials,
-              no listicles.
+              Tutorials, release notes and the decisions behind my projects.
+              From Laravel and React to email testing and cloud infrastructure.
             </p>
-            <Label>{notes.length} posts — RSS available</Label>
+            <Label>{total} posts</Label>
           </div>
         </div>
       </Container>
@@ -43,25 +44,20 @@ export default function NotesPage() {
               <h2 className="text-h3 leading-9 font-black tracking-[-0.03em]">
                 {group.year}
               </h2>
-              <Label>
-                {String(group.items.length).padStart(2, "0")} posts
-              </Label>
+              <Label>{String(group.items.length).padStart(2, "0")} posts</Label>
             </div>
 
-            {group.items.map((note) => (
+            {group.items.map((post) => (
               <Link
-                key={note.slug}
-                href={`/notes/${note.slug}`}
-                className="group border-rule flex flex-col gap-2.5 border-b py-5 lg:grid lg:grid-cols-[6.5rem_1fr_11.25rem_5rem] lg:items-center lg:gap-8 lg:py-6"
+                key={post.slug}
+                href={`/notes/${post.slug}`}
+                className="group border-rule flex flex-col gap-2.5 border-b py-5 lg:grid lg:grid-cols-[6.5rem_1fr_5rem] lg:items-center lg:gap-8 lg:py-6"
               >
-                <Label className="lg:order-1">{note.date}</Label>
+                <Label className="lg:order-1">{post.publishedAt}</Label>
                 <span className="text-lg font-medium tracking-[-0.015em] lg:order-2 lg:text-[1.375rem]">
-                  {note.title}
+                  {post.title}
                 </span>
-                <span className="flex items-center gap-6 lg:contents">
-                  <Label className="lg:order-3">{note.tag}</Label>
-                  <Label className="lg:order-4">{note.readingTime}</Label>
-                </span>
+                <Label className="lg:order-3">{post.readingTime}</Label>
               </Link>
             ))}
           </section>

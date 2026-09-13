@@ -101,7 +101,9 @@
   --text-h2--line-height: 1.04;
   --text-h1: clamp(2.875rem, 0.9rem + 7.4vw, 6.5rem);
   --text-h1--line-height: 0.96;
-  --text-display: clamp(2.875rem, 0.1rem + 10.4vw, 8rem);
+  --text-article-title: clamp(2.25rem, 1.2rem + 4vw, 4.5rem);
+  --text-article-title--line-height: 1.04;
+  --text-display: clamp(1.75rem, 9.1vw, 8rem);
   --text-display--line-height: 0.92;
 
   --tracking-caps: 0.12em;
@@ -132,6 +134,23 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  h1, h2, h3 {
+    overflow-wrap: anywhere;
+  }
+
+  .mdx-content {
+    overflow-wrap: anywhere;
+  }
+
+  .mdx-content pre {
+    overflow-wrap: normal;
+  }
+
+  .mdx-content li > ul,
+  .mdx-content li > ol {
+    margin-top: 0.5rem;
+  }
+
   ::selection {
     background-color: var(--color-accent);
     color: var(--color-on-accent);
@@ -151,6 +170,22 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* sugar-high token colours. Muted on purpose — a code block should read as
+   one object on the page, not a rainbow competing with the accent. */
+@layer base {
+  :root {
+    --sh-class: #7aa2f7;
+    --sh-identifier: #d5d3ce;
+    --sh-sign: #7c7a75;
+    --sh-property: #e0af68;
+    --sh-entity: #9ece6a;
+    --sh-jsxliterals: #bb9af7;
+    --sh-string: #9ece6a;
+    --sh-keyword: #f7768e;
+    --sh-comment: #6b6a66;
   }
 }
 

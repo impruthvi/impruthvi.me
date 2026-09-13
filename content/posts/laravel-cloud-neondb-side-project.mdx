@@ -1,0 +1,150 @@
+---
+title: 'From Supabase Latency to Near-Zero Idle Costs: My Laravel Cloud Journey'
+summary: 'A real developer journey through three database setups on Laravel Cloud — Supabase latency, native Postgres sticker shock, and finally landing on NeonDB for a near-zero idle cost stack perfect for side projects.'
+image: /images/posts/laravel-cloud-neondb.png
+author: 'Pruthvisinh Rajput'
+publishedAt: '2026-04-06'
+featured: true
+---
+
+I have a side project. Nothing fancy — a Laravel app I build for fun, use occasionally, and refuse to spend serious money on.
+
+When Laravel Cloud launched, it felt made for exactly this situation. Serverless compute, pay only for what you use, hibernation built in. As an Indian developer where every dollar counts more, this was exactly the kind of hosting I'd been waiting for.
+
+But getting to a truly cheap setup wasn't instant. I went through three iterations, hit real problems each time, and eventually landed on a stack that costs me close to nothing when the project is sleeping.
+
+Here's exactly what happened.
+
+---
+
+## Phase 1: Laravel Cloud + Supabase (The Latency Wake-up Call)
+
+My first instinct was Supabase. Free Postgres, generous free tier, great developer experience. I'd used it on other projects and liked it. Why not pair it with Laravel Cloud?
+
+The setup was easy. I grabbed the connection string from the Supabase dashboard, dropped it into my `.env`, and deployed. Everything worked — technically.
+
+But every page load felt sluggish. Not broken, just slow in a way I couldn't ignore. Queries that should have been instant were taking hundreds of milliseconds. At first I thought it was my code. I profiled, optimised, cleaned up N+1 issues. The slowness stayed.
+
+The real culprit was geography.
+
+Laravel Cloud runs on AWS infrastructure. Supabase has its own data centres — and there are far fewer of them. My Laravel Cloud compute was in one AWS region. The closest Supabase instance I could pick was in a different region entirely. Every database query was crossing a significant distance.
+
+This is a known issue. The Supabase community has reported it: users in certain regions see query times approaching a full second just from the round-trip distance. The fix is regional alignment — your app and your database need to be in the same place. Supabase simply doesn't have a centre close enough to every AWS region Laravel Cloud supports.
+
+I moved on.
+
+---
+
+## Phase 2: Laravel Cloud Native Postgres (The Cost Reality)
+
+Laravel Cloud offers its own Serverless Postgres. I switched to it and the latency vanished — database and compute in the same region by default.
+
+The experience was genuinely good. Autoscaling, Point-in-Time Recovery backups, pgvector support for anything AI-related. The integration is seamless. And crucially, it supports hibernation.
+
+### How database hibernation works
+
+Go to your Resources page, find the Serverless Postgres cluster, click the `…` menu, and select **Edit settings**. You'll see a hibernation timeout — the number of seconds of inactivity before the database scales down to zero. When it's hibernating, you pay nothing for compute.
+
+Only **Serverless Postgres** supports this. MySQL on Laravel Cloud does not hibernate in the same way.
+
+### How compute hibernation works
+
+The project itself also hibernates. Go to your app's compute instance settings and configure the inactivity timeout — the number of seconds without an incoming HTTP request before the environment shuts down.
+
+When traffic arrives after hibernation, the app wakes up. The cold start is roughly **10 seconds**. For a side project I'm the only user of, that's completely acceptable.
+
+A few things to keep in mind:
+- **WebSocket connections prevent hibernation.** If you have any persistent WebSocket connections, the timer won't count down.
+- **Bots and crawlers can wake your app** — search engine bots, Slack link previews, and messaging app crawlers all trigger requests. If your domain is publicly indexed, the app may never actually hibernate.
+
+### The $5/month plan
+
+Laravel Cloud's smallest compute instance — Flex 1 vCPU with 256MB RAM — runs at **$5/month if it's on 24/7**. With hibernation enabled, you pay only for the time it's actually processing requests. New organisations also get $5 in free compute credit with no card required.
+
+For the compute side, this was perfect.
+
+### The part that stung
+
+The Serverless Postgres storage pricing is **$0.50 per GB per month**. For comparison, MySQL on Laravel Cloud is $0.20/GB/month.
+
+Storage costs don't go away when the database hibernates. Even if my side project is sleeping 98% of the time, I'm paying for the storage every month. Add in backup retention and it adds up faster than I expected. For a production app this is fair. For a side project with tiny data that I poke at on weekends, it felt like too much.
+
+I started looking for alternatives — keeping Laravel Cloud for compute but swapping the database.
+
+---
+
+## Phase 3: Laravel Cloud + NeonDB (The Sweet Spot)
+
+NeonDB is serverless Postgres built differently. Compute and storage are separated. The database suspends automatically when idle. You pay only for the compute time your queries actually consume.
+
+### Why NeonDB works for this use case
+
+**Free tier is genuinely useful.** 100 compute unit-hours per month, 0.5 GB storage. For a side project with low traffic, that's enough to never leave the free tier.
+
+**Auto-suspend happens at 5 minutes of inactivity** on the free plan. When your next query arrives, the database wakes up in roughly **300–500 milliseconds**. That's the cold start you trade for near-zero cost. For a side project, I'll take it.
+
+**No fixed storage cost surprises.** You pay for what you store, and the free tier's 0.5 GB covers most small projects without a bill.
+
+### Connecting NeonDB to Laravel
+
+It's just an `.env` change. Create a project in the Neon console, grab the connection string, and drop it in:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=your-project.region.aws.neon.tech
+DB_PORT=5432
+DB_DATABASE=your_database
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+```
+
+Laravel migrations, Eloquent, everything works exactly as you'd expect. Nothing in your application code needs to change.
+
+### What the final stack looks like
+
+| Layer | Cost when idle | Cost when active |
+|---|---|---|
+| Laravel Cloud compute | $0 (hibernating) | Pay per request |
+| NeonDB database | $0 (auto-suspended) | Pay per query compute |
+
+A side project that nobody uses on a Tuesday night costs nothing on that Tuesday night. That's the goal.
+
+---
+
+## Comparing the Three Setups
+
+| Setup | Idle Cost | DB Cold Start | Best For |
+|---|---|---|---|
+| Laravel Cloud + Supabase | Low | None | Not recommended — latency risk |
+| Laravel Cloud + Native Postgres | Medium (storage) | Near-instant | Production, tight integration |
+| Laravel Cloud + NeonDB | Near $0 | ~300–500ms | Side projects, budget-conscious devs |
+
+---
+
+## When to Use Each Option
+
+**Use Laravel Cloud Postgres if:**
+- You're running a real production app with users who expect instant responses
+- You need PITR backups and don't want to manage anything yourself
+- The tight native integration and support are worth the cost
+
+**Use NeonDB if:**
+- It's a side project, hobby app, or internal tool
+- You want near-zero idle costs and the free tier covers your usage
+- A 300–500ms database cold start is acceptable
+
+**Use Supabase if:**
+- You need auth, realtime, storage, and edge functions all in one place
+- Make sure your Supabase region and Laravel Cloud region are aligned before you commit — or you'll hit the same latency wall I did
+
+---
+
+## The Actual Experience
+
+After switching to NeonDB, I stopped thinking about the database bill. The project hibernates. The database auto-suspends. When I open the app and it takes an extra second to wake up, I remember exactly why — and I'm fine with it.
+
+Laravel Cloud with hibernation enabled is one of the most developer-friendly hosting experiences I've had for Laravel. The $5/month compute floor for always-on is fair. The fact that you can get well under that with hibernation is even better.
+
+If you're an Indian developer running side projects and you've been hesitant about Laravel Cloud costs — the combination of compute hibernation and NeonDB's free tier makes it genuinely affordable. You can run a real, production-grade Laravel app professionally and pay close to nothing when nobody's using it.
+
+That's a pretty good deal.
