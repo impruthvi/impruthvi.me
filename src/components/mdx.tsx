@@ -6,6 +6,7 @@ import GithubSlugger from "github-slugger";
 import remarkGfm from "remark-gfm";
 import { highlight } from "sugar-high";
 import { Label } from "@/components/ui";
+import { CodeBlock } from "@/components/code-block";
 
 function heading(level: 2 | 3) {
   const Tag = `h${level}` as const;
@@ -83,12 +84,7 @@ const components = {
     );
   },
 
-  pre: (props: ComponentProps<"pre">) => (
-    <pre
-      className="bg-code-bg text-code-fg border-rule max-w-full overflow-x-auto border px-6 py-5"
-      {...props}
-    />
-  ),
+  pre: CodeBlock,
 
   table: (props: ComponentProps<"table">) => (
     <div className="overflow-x-auto">

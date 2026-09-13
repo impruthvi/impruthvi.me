@@ -23,7 +23,7 @@ export default function AboutPage() {
               From the database to the details.
             </h1>
             <p className="text-prose text-body">
-              I&rsquo;m Pruthvisinh, a full-stack engineer based in Ahmedabad.
+              I&rsquo;m Pruthvisinh, a software developer based in Ahmedabad.
               I build Laravel, Node.js and React applications for healthcare,
               property management and business software. My work spans payment
               integrations, database performance and the interfaces people use
