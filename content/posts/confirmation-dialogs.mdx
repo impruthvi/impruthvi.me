@@ -4,6 +4,7 @@
   image: /images/posts/confirmation-dialogs.webp
   author: 'Pruthvisinh Rajput'
   publishedAt: '2024-11-30'
+  noindex: true
 ---
 
 When building user interfaces, confirmation dialogs play a critical role in
@@ -113,32 +114,6 @@ export const useConfirm = (
 }
 ```
 
-## Why This Approach Works
-
-### 1. Clean Separation of Concerns
-
-The `useConfirm` hook encapsulates both the UI and state logic, keeping them
-isolated from the main components. This reduces clutter and ensures that your
-components remain focused on their primary responsibilities.
-
-### 2. Reusable and Customizable
-
-The `useConfirm` hook is designed with flexibility in mind. You can:
-
-- Change the **title** and **message** to suit different contexts.
-- Adjust the **button styles** using the `variant` prop for various actions
-  (e.g., primary, destructive, or outline).
-
-This allows you to reuse the dialog across different parts of your application
-without duplicating code.
-
-### 3. Scalable Design
-
-By abstracting the confirmation dialog into a hook, this approach ensures
-consistency and maintainability across your application. Even in projects with
-multiple confirmation dialogs, you can rely on the same logic and styling,
-making it easy to scale.
-
 ## Using the Hook
 
 Here’s an example of how to use useConfirm in a component:
@@ -209,7 +184,7 @@ explore the
 [GitHub repository](https://github.com/impruthvi/jira-clone/blob/main/src/hooks/use-confirm.tsx)
 for the complete codebase and more examples.
 
-## **Happy coding! 🚀**
+**Happy coding! 🚀**
 
 **Note:** This implementation uses components from the ShadCN component library.
 Please refer to the [ShadCN documentation](https://ui.shadcn.com/docs) for more

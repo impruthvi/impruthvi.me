@@ -6,10 +6,11 @@ import { ThemeScript } from "@/components/theme-script";
 import { site } from "@/lib/site";
 import "./globals.css";
 
+// No `wdth` axis: carrying it made the latin subset 90,104 bytes against
+// 34,928 without, and nothing in the codebase varies font width.
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
-  axes: ["wdth"],
 });
 
 const geistMono = Geist_Mono({
@@ -17,27 +18,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Italic only. Every `font-serif` in the codebase is paired with `italic`, so
+// the upright face was downloaded on every page and never painted.
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],
   weight: "400",
-  style: ["normal", "italic"],
+  style: ["italic"],
 });
 
+// Only the title template, the RSS alternate and the Twitter card live here.
+// Canonical and OpenGraph are deliberately absent: a root `openGraph.url` is
+// inherited by every page that does not set its own, which had `/notes` and
+// `/about` declaring themselves the homepage. Pages build theirs with
+// `pageMetadata`, which derives canonical and og:url from one path.
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.role}`,
+    default: site.seoTitle,
     template: `%s — ${site.name}`,
   },
   description: site.description,
-  openGraph: {
-    type: "website",
-    url: site.url,
-    siteName: site.name,
-    title: `${site.name} — ${site.role}`,
-    description: site.description,
-  },
   twitter: { card: "summary_large_image" },
   alternates: { types: { "application/rss+xml": "/rss.xml" } },
 };

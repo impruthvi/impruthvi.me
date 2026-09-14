@@ -1,8 +1,33 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { getCaseStudies, getPosts, workYearRange } from "@/lib/content";
+import { absoluteUrl, graph, pageMetadata, personId, personSchema, websiteSchema } from "@/lib/seo";
 import { Band, Chip, Container, Label, SectionHeader } from "@/components/ui";
+import { JsonLd } from "@/components/json-ld";
 import { WorkRow } from "@/components/work-row";
+
+export const metadata = pageMetadata({
+  title: site.seoTitle,
+  description: site.description,
+  path: "/",
+});
+
+// ProfilePage rather than WebPage: the homepage's subject is the person, and
+// `mainEntity` is what tells Google which entity the site is about.
+const homeSchema = graph(
+  personSchema(),
+  websiteSchema(),
+  {
+    "@type": "ProfilePage",
+    "@id": absoluteUrl("/"),
+    url: absoluteUrl("/"),
+    name: site.seoTitle,
+    description: site.description,
+    inLanguage: "en",
+    isPartOf: { "@id": absoluteUrl("/#website") },
+    mainEntity: { "@id": personId },
+  },
+);
 
 const practice = [
   {
@@ -28,6 +53,7 @@ export default function HomePage() {
 
   return (
     <>
+      <JsonLd data={homeSchema} />
       <Container className="pt-16 pb-14 lg:pt-22 lg:pb-16">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Label tone="ink">{site.name}</Label>
@@ -67,6 +93,9 @@ export default function HomePage() {
           {studies.map((study, i) => (
             <WorkRow key={study.slug} study={study} index={i} />
           ))}
+          <Link href="/work" className="label border-ink mt-8 inline-block border-b pb-1">
+            All case studies
+          </Link>
         </Container>
       </section>
 

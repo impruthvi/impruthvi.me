@@ -2,8 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getPost, getPosts } from "@/lib/content";
+import { absoluteUrl, breadcrumbSchema, graph, pageMetadata, personId } from "@/lib/seo";
 import { renderMdx } from "@/components/mdx";
 import { ArticleToc } from "@/components/article-toc";
+import { JsonLd } from "@/components/json-ld";
 import { ArrowLeft, ArrowUpRight, Container, Label } from "@/components/ui";
 
 export function generateStaticParams() {
@@ -14,17 +16,17 @@ export async function generateMetadata({ params }: PageProps<"/notes/[slug]">) {
   const post = getPost((await params).slug);
   if (!post) return {};
   return {
-    title: post.title,
-    description: post.summary,
-    alternates: { canonical: `/notes/${post.slug}` },
-    openGraph: {
-      type: "article",
-      url: `/notes/${post.slug}`,
+    ...pageMetadata({
       title: post.title,
       description: post.summary,
+      path: `/notes/${post.slug}`,
+      type: "article",
+      // The sibling `opengraph-image.tsx`, which frames the poster to 1200x630.
+      image: `/notes/${post.slug}/opengraph-image`,
       publishedTime: post.publishedAt,
-      images: post.image ? [{ url: post.image, alt: post.title }] : undefined,
-    },
+    }),
+    // Kept for readers who arrive from a link, withheld from search.
+    ...(post.noindex ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -37,8 +39,36 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
   const next = posts[(posts.findIndex((p) => p.slug === slug) + 1) % posts.length];
   const { content, headings } = await renderMdx(post.body);
 
+  // `dateModified` only when `updatedAt` is set. Deriving it from the build
+  // time would claim freshness the content has not earned.
+  const schema = graph(
+    {
+      "@type": "BlogPosting",
+      "@id": absoluteUrl(`/notes/${post.slug}`),
+      mainEntityOfPage: absoluteUrl(`/notes/${post.slug}`),
+      url: absoluteUrl(`/notes/${post.slug}`),
+      headline: post.title,
+      description: post.summary,
+      datePublished: post.publishedAt,
+      ...(post.updatedAt ? { dateModified: post.updatedAt } : {}),
+      inLanguage: "en",
+      author: { "@id": personId },
+      publisher: { "@id": personId },
+      isPartOf: { "@id": absoluteUrl("/#website") },
+      ...(post.image ? { image: absoluteUrl(post.image) } : {}),
+    },
+    breadcrumbSchema(
+      [
+        { name: "Home", path: "/" },
+        { name: "Field notes", path: "/notes" },
+      ],
+      post.title,
+    ),
+  );
+
   return (
     <>
+      <JsonLd data={schema} />
       <Container className="pt-14 pb-10 lg:pt-16 lg:pb-12">
         <Link
           href="/notes"
@@ -58,6 +88,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
 
         <div className="mt-7 flex flex-wrap items-center gap-5">
           <Label>{post.publishedAt}</Label>
+          {post.updatedAt ? <Label>Updated {post.updatedAt}</Label> : null}
           <Label>{post.readingTime} read</Label>
           {post.author ? <Label>{post.author}</Label> : null}
         </div>
@@ -72,9 +103,11 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
               fill
               sizes="(min-width: 1440px) 1248px, (min-width: 1024px) calc(100vw - 192px), calc(100vw - 48px)"
               className="object-contain"
-              // The poster sits just under the title, so it is the LCP element
-              // on every article. Lazy loading it defers the largest paint.
+              // The poster is the LCP element on desktop, where it outsizes the
+              // title. On a phone the h1 wins and this is just below the fold.
+              // `loading="eager"` alone still fetched it at Low priority.
               loading="eager"
+              fetchPriority="high"
             />
           </div>
         </Container>

@@ -1,9 +1,10 @@
 ---
 title: 'I got tired of janky nodemailer mocks on every project'
-summary: 'Every Node.js project I joined had a broken email mock nobody wanted to touch. So I built Mail.fake() — zero-setup email testing for Node.js. No SMTP server, no jest.mock(), no console.log hunting.'
+summary: 'Every Node.js project I joined had a broken email mock nobody wanted to touch. So I built laramail: Laravel-style email for Node.js with Mail.fake() testing, Mailable classes and one-env-var provider switching across six providers.'
 image: /images/posts/laramail-mail-fake.png
 author: 'Pruthvisinh Rajput'
 publishedAt: '2026-03-30'
+updatedAt: '2026-09-15'
 featured: true
 ---
 
@@ -119,6 +120,46 @@ Your email logic lives in one place. Easy to test, easy to reuse, easy to find.
 
 ---
 
+## Laravel-style mail for Node.js: the provider problem
+
+Testing is why I built laramail. Provider lock-in is why I kept working on it.
+
+I hit this three times across three projects. You use SMTP in dev, SendGrid in production, and one day you want to try Resend. Sending with Resend looks like this:
+
+```typescript
+// Resend ships its own SDK — nodemailer is not in the picture at all
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+await resend.emails.send({
+  from: 'noreply@example.com',
+  to: 'user@example.com',
+  subject: 'Welcome!',
+  html: '<h1>Hello!</h1>',
+});
+```
+
+And SendGrid looks like this:
+
+```typescript
+// Different package, different API shape, different config
+import sgMail from '@sendgrid/mail';
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+await sgMail.send({
+  to: 'user@example.com',
+  from: 'noreply@example.com',
+  subject: 'Welcome!',
+  html: '<h1>Hello!</h1>',
+});
+```
+
+Every provider is a different package with a different API and a different config format. Switching means touching every place you send email, then re-testing all of it. It takes half a day. It should take one line.
+
+Laravel solved this years ago: configure the providers once, and application code never learns which one is active.
+
 ## Setup
 
 ```typescript
@@ -138,11 +179,66 @@ Mail.configure({
       driver: 'resend',
       apiKey: process.env.RESEND_API_KEY,
     },
+    sendgrid: {
+      driver: 'sendgrid',
+      apiKey: process.env.SENDGRID_API_KEY,
+    },
   },
 });
 ```
 
-Switch providers by changing `MAIL_DRIVER` in your `.env`. No code changes. That's a bonus side effect — the testing story is the reason I built this.
+Your send call never changes:
+
+```typescript
+await Mail.to('user@example.com').send(new WelcomeEmail(user));
+```
+
+Switching provider is an environment variable:
+
+```bash
+# Before
+MAIL_DRIVER=resend
+
+# After
+MAIL_DRIVER=sendgrid
+```
+
+No code changes. Zero.
+
+---
+
+## Provider failover
+
+Two providers configured means you can chain them:
+
+```typescript
+Mail.configure({
+  default: 'resend',
+  failover: ['resend', 'sendgrid'], // try resend first, fall back to sendgrid
+  mailers: {
+    resend:   { driver: 'resend',   apiKey: process.env.RESEND_API_KEY },
+    sendgrid: { driver: 'sendgrid', apiKey: process.env.SENDGRID_API_KEY },
+  },
+});
+```
+
+If Resend is down, laramail retries through SendGrid. The user gets their email either way.
+
+---
+
+## Local development without an SMTP server
+
+The log driver writes the rendered email to stdout instead of sending it, which is usually what you want on a laptop:
+
+```typescript
+Mail.configure({ default: 'log', mailers: { log: { driver: 'log' } } });
+```
+
+And if you use a provider laramail does not ship, `Mail.extend()` registers your own:
+
+```typescript
+Mail.extend('mycustom', () => new MyCustomTransport());
+```
 
 ---
 

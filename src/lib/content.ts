@@ -9,6 +9,8 @@ export type Metric = { label: string; value: string };
 export type CaseStudy = {
   slug: string;
   title: string;
+  /** Optional search title. Falls back to `title` when absent. */
+  seoTitle?: string;
   tagline: string;
   category: string;
   period: string;
@@ -25,9 +27,15 @@ export type Post = {
   slug: string;
   title: string;
   summary: string;
+  /** Useful to a reader arriving from a link, but not worth a search result.
+      Stays on the site and in the feed; leaves the sitemap. */
+  noindex?: boolean;
   image?: string;
   author?: string;
   publishedAt: string;
+  /** Set only when a post is substantively revised, so `dateModified` and
+      `lastmod` stay honest rather than tracking deploys. */
+  updatedAt?: string;
   featured: boolean;
   readingTime: string;
   body: string;
@@ -68,6 +76,7 @@ export function getCaseStudies(): CaseStudy[] {
     .map(({ slug, data, body }) => ({
       slug,
       title: String(data.title ?? slug),
+      seoTitle: data.seoTitle ? String(data.seoTitle) : undefined,
       tagline: String(data.tagline ?? ""),
       category: String(data.category ?? ""),
       period: String(data.period ?? ""),
@@ -92,9 +101,11 @@ export function getPosts(): Post[] {
       slug,
       title: String(data.title ?? slug),
       summary: String(data.summary ?? ""),
+      noindex: Boolean(data.noindex),
       image: data.image ? String(data.image) : undefined,
       author: data.author ? String(data.author) : undefined,
       publishedAt: String(data.publishedAt ?? ""),
+      updatedAt: data.updatedAt ? String(data.updatedAt) : undefined,
       featured: Boolean(data.featured),
       readingTime: readingTime(body),
       body,
@@ -104,6 +115,11 @@ export function getPosts(): Post[] {
 
 export function getPost(slug: string) {
   return getPosts().find((post) => post.slug === slug);
+}
+
+/** Posts that belong in the sitemap and in search results. */
+export function getIndexablePosts() {
+  return getPosts().filter((post) => !post.noindex);
 }
 
 /** Posts grouped by year, newest first, for the notes index. */

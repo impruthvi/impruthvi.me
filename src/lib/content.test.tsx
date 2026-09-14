@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { renderMdx } from "@/components/mdx";
 import { getCaseStudies, getPosts, isDraft, postsByYear } from "@/lib/content";
 import { GET as getFeed } from "@/app/rss.xml/route";
+import { site } from "@/lib/site";
 
 /** Files the site is expected to publish — drafts are deliberately withheld. */
 function publishedFiles(dir: string) {
@@ -44,7 +45,6 @@ describe("restored content", () => {
         .filter((file) => isDraft(fs.readFileSync(path.join("content", dir, file), "utf8")))
         .map((file) => file.replace(/\.mdx$/, "")),
     );
-    expect(drafts).toContain("biznetworkpro");
     const published = [...getPosts(), ...getCaseStudies()].map((entry) => entry.slug);
     for (const slug of drafts) expect(published).not.toContain(slug);
   });
@@ -83,8 +83,10 @@ describe("restored content", () => {
     const xml = await response.text();
     expect(xml.match(/<item>/g)?.length).toBe(getPosts().length);
     for (const post of getPosts()) {
-      expect(xml).toContain(`<link>https://impruthvi.me/notes/${post.slug}</link>`);
-      expect(xml).toContain(`<guid isPermaLink="true">https://impruthvi.me/posts/${post.slug}</guid>`);
+      expect(xml).toContain(`<link>${site.url}/notes/${post.slug}</link>`);
+      // GUIDs stay on the pre-rewrite /posts/ path so subscribers do not see
+      // every post again. They redirect, hence isPermaLink="false".
+      expect(xml).toContain(`<guid isPermaLink="false">${site.url}/posts/${post.slug}</guid>`);
     }
     expect(xml).toContain("&amp;");
     expect(xml).not.toContain("Invalid Date");

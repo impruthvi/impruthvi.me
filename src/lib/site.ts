@@ -1,7 +1,13 @@
 export const site = {
   name: "Pruthvisinh Rajput",
   role: "Software Developer",
-  url: "https://impruthvi.me",
+  // The www host is canonical. Vercel 301s the apex, the vercel.app domains and
+  // http to it, so anything this constant feeds — canonicals, og:url, sitemap,
+  // robots, RSS — has to be www or it advertises a redirect.
+  url: "https://www.impruthvi.me",
+  /** Search-facing positioning. More specific than `role`, which is the label
+      printed on the page, because a title tag has to carry the technology. */
+  seoTitle: "Pruthvisinh Rajput | Laravel & Node.js Engineer",
   location: "Ahmedabad, IN",
   timezone: "UTC+5:30",
   email: "pruthvirajput97@gmail.com",
