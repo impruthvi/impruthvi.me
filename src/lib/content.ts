@@ -9,6 +9,8 @@ export type Metric = { label: string; value: string };
 export type CaseStudy = {
   slug: string;
   title: string;
+  /** Optional search title. Falls back to `title` when absent. */
+  seoTitle?: string;
   tagline: string;
   category: string;
   period: string;
@@ -68,6 +70,7 @@ export function getCaseStudies(): CaseStudy[] {
     .map(({ slug, data, body }) => ({
       slug,
       title: String(data.title ?? slug),
+      seoTitle: data.seoTitle ? String(data.seoTitle) : undefined,
       tagline: String(data.tagline ?? ""),
       category: String(data.category ?? ""),
       period: String(data.period ?? ""),

@@ -24,20 +24,18 @@ const instrumentSerif = Instrument_Serif({
   style: ["normal", "italic"],
 });
 
+// Only the title template, the RSS alternate and the Twitter card live here.
+// Canonical and OpenGraph are deliberately absent: a root `openGraph.url` is
+// inherited by every page that does not set its own, which had `/notes` and
+// `/about` declaring themselves the homepage. Pages build theirs with
+// `pageMetadata`, which derives canonical and og:url from one path.
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.role}`,
+    default: site.seoTitle,
     template: `%s — ${site.name}`,
   },
   description: site.description,
-  openGraph: {
-    type: "website",
-    url: site.url,
-    siteName: site.name,
-    title: `${site.name} — ${site.role}`,
-    description: site.description,
-  },
   twitter: { card: "summary_large_image" },
   alternates: { types: { "application/rss+xml": "/rss.xml" } },
 };

@@ -2,8 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getPost, getPosts } from "@/lib/content";
+import { absoluteUrl, breadcrumbSchema, graph, pageMetadata, personId } from "@/lib/seo";
 import { renderMdx } from "@/components/mdx";
 import { ArticleToc } from "@/components/article-toc";
+import { JsonLd } from "@/components/json-ld";
 import { ArrowLeft, ArrowUpRight, Container, Label } from "@/components/ui";
 
 export function generateStaticParams() {
@@ -13,19 +15,15 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/notes/[slug]">) {
   const post = getPost((await params).slug);
   if (!post) return {};
-  return {
+  return pageMetadata({
     title: post.title,
     description: post.summary,
-    alternates: { canonical: `/notes/${post.slug}` },
-    openGraph: {
-      type: "article",
-      url: `/notes/${post.slug}`,
-      title: post.title,
-      description: post.summary,
-      publishedTime: post.publishedAt,
-      images: post.image ? [{ url: post.image, alt: post.title }] : undefined,
-    },
-  };
+    path: `/notes/${post.slug}`,
+    type: "article",
+    // The sibling `opengraph-image.tsx`, which frames the poster to 1200x630.
+    image: `/notes/${post.slug}/opengraph-image`,
+    publishedTime: post.publishedAt,
+  });
 }
 
 export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
@@ -37,8 +35,36 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
   const next = posts[(posts.findIndex((p) => p.slug === slug) + 1) % posts.length];
   const { content, headings } = await renderMdx(post.body);
 
+  // No `dateModified`: nothing in the frontmatter tracks edits, and inventing
+  // one from the build time would be a freshness signal the content has not
+  // earned.
+  const schema = graph(
+    {
+      "@type": "BlogPosting",
+      "@id": absoluteUrl(`/notes/${post.slug}`),
+      mainEntityOfPage: absoluteUrl(`/notes/${post.slug}`),
+      url: absoluteUrl(`/notes/${post.slug}`),
+      headline: post.title,
+      description: post.summary,
+      datePublished: post.publishedAt,
+      inLanguage: "en",
+      author: { "@id": personId },
+      publisher: { "@id": personId },
+      isPartOf: { "@id": absoluteUrl("/#website") },
+      ...(post.image ? { image: absoluteUrl(post.image) } : {}),
+    },
+    breadcrumbSchema(
+      [
+        { name: "Home", path: "/" },
+        { name: "Field notes", path: "/notes" },
+      ],
+      post.title,
+    ),
+  );
+
   return (
     <>
+      <JsonLd data={schema} />
       <Container className="pt-14 pb-10 lg:pt-16 lg:pb-12">
         <Link
           href="/notes"

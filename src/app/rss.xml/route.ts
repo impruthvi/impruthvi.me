@@ -16,10 +16,12 @@ export function GET() {
       <link>${site.url}/notes/${post.slug}</link>
       <description>${xml(post.summary)}</description>
       <pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>
-      <guid isPermaLink="true">${site.url}/posts/${post.slug}</guid>
+      <guid isPermaLink="false">${site.url}/posts/${post.slug}</guid>
     </item>`).join("");
 
   // Keep the original GUIDs so subscribers do not receive every post again.
+  // They are the pre-rewrite /posts/ URLs, which now redirect, so they are
+  // flagged isPermaLink="false" — an identifier, not an address.
   return new Response(`<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>

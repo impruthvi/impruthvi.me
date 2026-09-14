@@ -5,16 +5,40 @@ import { experienceData } from "@/data/experience";
 import { skillsData } from "@/data/skills";
 import { openSourceData } from "@/data/open-source";
 import { educationData } from "@/data/education";
+import { absoluteUrl, breadcrumbSchema, graph, pageMetadata, personId } from "@/lib/seo";
 import { ArrowUpRight, Container, Label, SectionHeader } from "@/components/ui";
+import { JsonLd } from "@/components/json-ld";
 
-export const metadata = {
+const description =
+  "Pruthvisinh Rajput is a software engineer in Ahmedabad working on Laravel and backend systems — healthcare and property platforms, Stripe billing, and open-source developer tools.";
+
+export const metadata = pageMetadata({
   title: "About",
-  description: site.description,
-};
+  description,
+  path: "/about",
+  type: "profile",
+});
+
+// The resume content lives here, so this page is the one that carries the
+// employment and education history as structured data.
+const schema = graph(
+  {
+    "@type": "AboutPage",
+    "@id": absoluteUrl("/about"),
+    url: absoluteUrl("/about"),
+    name: "About Pruthvisinh Rajput",
+    description,
+    inLanguage: "en",
+    isPartOf: { "@id": absoluteUrl("/#website") },
+    mainEntity: { "@id": personId },
+  },
+  breadcrumbSchema([{ name: "Home", path: "/" }], "About"),
+);
 
 export default function AboutPage() {
   return (
     <>
+      <JsonLd data={schema} />
       <Container className="pt-14 pb-16 lg:pt-18">
         <div className="flex flex-col gap-12 lg:flex-row lg:justify-between lg:gap-20">
           <div className="flex flex-col gap-8 lg:max-w-[43.5rem]">

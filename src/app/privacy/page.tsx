@@ -1,11 +1,12 @@
 import { Container, Label } from "@/components/ui";
 import { site } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Privacy",
   description: "How this portfolio handles browser preferences and contact links.",
-  alternates: { canonical: "/privacy" },
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

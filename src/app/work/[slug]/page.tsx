@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCaseStudies, getCaseStudy } from "@/lib/content";
+import { absoluteUrl, breadcrumbSchema, graph, pageMetadata, personId } from "@/lib/seo";
 import { Mdx } from "@/components/mdx";
+import { JsonLd } from "@/components/json-ld";
 import { ArrowLeft, ArrowUpRight, Band, Container, Label } from "@/components/ui";
 
 export function generateStaticParams() {
@@ -11,12 +13,17 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/work/[slug]">) {
   const study = getCaseStudy((await params).slug);
   if (!study) return {};
-  return {
-    title: study.title,
+  return pageMetadata({
+    // `seoTitle` frontmatter, where set, carries the engineering result instead
+    // of the bare product name. The taglines are too long to fold into a title
+    // tag, so this is opt-in per study rather than derived.
+    title: study.seoTitle ?? study.title,
     description: study.tagline,
-    alternates: { canonical: `/work/${study.slug}` },
-    openGraph: { title: study.title, description: study.tagline, url: `/work/${study.slug}` },
-  };
+    path: `/work/${study.slug}`,
+    type: "article",
+    image: `/work/${study.slug}/opengraph-image`,
+    publishedTime: study.publishedAt,
+  });
 }
 
 export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]">) {
@@ -30,11 +37,39 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
   // The headline metric already sits in the header; the band shows the rest.
   const bandMetrics = study.metrics.slice(1);
 
+  const schema = graph(
+    {
+      "@type": "Article",
+      "@id": absoluteUrl(`/work/${study.slug}`),
+      mainEntityOfPage: absoluteUrl(`/work/${study.slug}`),
+      url: absoluteUrl(`/work/${study.slug}`),
+      headline: study.seoTitle ?? study.title,
+      description: study.tagline,
+      inLanguage: "en",
+      author: { "@id": personId },
+      publisher: { "@id": personId },
+      isPartOf: { "@id": absoluteUrl("/#website") },
+      keywords: study.techStack,
+      ...(study.publishedAt ? { datePublished: study.publishedAt } : {}),
+      ...(study.url
+        ? { about: { "@type": "SoftwareApplication", name: study.title, url: study.url } }
+        : {}),
+    },
+    breadcrumbSchema(
+      [
+        { name: "Home", path: "/" },
+        { name: "Case studies", path: "/work" },
+      ],
+      study.title,
+    ),
+  );
+
   return (
     <>
+      <JsonLd data={schema} />
       <Container className="pt-14 pb-12 lg:pt-16">
         <Link
-          href="/"
+          href="/work"
           className="text-muted hover:text-ink flex items-center gap-2.5 transition-colors"
         >
           <ArrowLeft />

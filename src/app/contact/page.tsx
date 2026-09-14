@@ -1,10 +1,29 @@
 import { site } from "@/lib/site";
+import { absoluteUrl, breadcrumbSchema, graph, pageMetadata, personId } from "@/lib/seo";
 import { Chip, Container, Label } from "@/components/ui";
+import { JsonLd } from "@/components/json-ld";
 
-export const metadata = {
+const description = `Get in touch with ${site.name} about Laravel, Node.js or backend engineering work — by email, GitHub or LinkedIn.`;
+
+export const metadata = pageMetadata({
   title: "Contact",
-  description: `Get in touch with ${site.name}.`,
-};
+  description,
+  path: "/contact",
+});
+
+const schema = graph(
+  {
+    "@type": "ContactPage",
+    "@id": absoluteUrl("/contact"),
+    url: absoluteUrl("/contact"),
+    name: "Contact",
+    description,
+    inLanguage: "en",
+    isPartOf: { "@id": absoluteUrl("/#website") },
+    mainEntity: { "@id": personId },
+  },
+  breadcrumbSchema([{ name: "Home", path: "/" }], "Contact"),
+);
 
 const channels = [
   {
@@ -30,6 +49,7 @@ const channels = [
 export default function ContactPage() {
   return (
     <Container className="flex min-h-[70vh] flex-col justify-center py-16">
+      <JsonLd data={schema} />
       <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end lg:gap-16">
         <div className="flex flex-col gap-6">
           <Label>Contact</Label>

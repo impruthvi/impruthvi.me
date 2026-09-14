@@ -1,18 +1,46 @@
 import Link from "next/link";
 import { getPosts, postsByYear } from "@/lib/content";
+import { absoluteUrl, breadcrumbSchema, graph, pageMetadata, personId } from "@/lib/seo";
 import { Container, Label } from "@/components/ui";
+import { JsonLd } from "@/components/json-ld";
 
-export const metadata = {
+const description =
+  "Articles on Laravel, React, infrastructure and open-source developer tools.";
+
+export const metadata = pageMetadata({
   title: "Field notes",
-  description: "Articles on Laravel, React, infrastructure and open-source developer tools.",
-};
+  description,
+  path: "/notes",
+});
 
 export default function NotesPage() {
   const groups = postsByYear();
-  const total = getPosts().length;
+  const posts = getPosts();
+  const total = posts.length;
+
+  const schema = graph(
+    {
+      "@type": "Blog",
+      "@id": absoluteUrl("/notes"),
+      url: absoluteUrl("/notes"),
+      name: "Field notes",
+      description,
+      inLanguage: "en",
+      isPartOf: { "@id": absoluteUrl("/#website") },
+      author: { "@id": personId },
+      blogPost: posts.map((post) => ({
+        "@type": "BlogPosting",
+        "@id": absoluteUrl(`/notes/${post.slug}`),
+        headline: post.title,
+        datePublished: post.publishedAt,
+      })),
+    },
+    breadcrumbSchema([{ name: "Home", path: "/" }], "Field notes"),
+  );
 
   return (
     <>
+      <JsonLd data={schema} />
       <Container className="pt-16 pb-12 lg:pt-18 lg:pb-14">
         <div className="flex flex-col justify-between gap-10 lg:flex-row lg:items-end lg:gap-20">
           <div className="flex flex-col gap-5">
