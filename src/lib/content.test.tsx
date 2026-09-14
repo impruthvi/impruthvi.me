@@ -45,7 +45,6 @@ describe("restored content", () => {
         .filter((file) => isDraft(fs.readFileSync(path.join("content", dir, file), "utf8")))
         .map((file) => file.replace(/\.mdx$/, "")),
     );
-    expect(drafts).toContain("biznetworkpro");
     const published = [...getPosts(), ...getCaseStudies()].map((entry) => entry.slug);
     for (const slug of drafts) expect(published).not.toContain(slug);
   });

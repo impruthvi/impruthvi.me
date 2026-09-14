@@ -6,10 +6,11 @@ import { ThemeScript } from "@/components/theme-script";
 import { site } from "@/lib/site";
 import "./globals.css";
 
+// No `wdth` axis: carrying it made the latin subset 90,104 bytes against
+// 34,928 without, and nothing in the codebase varies font width.
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
-  axes: ["wdth"],
 });
 
 const geistMono = Geist_Mono({
@@ -17,11 +18,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Italic only. Every `font-serif` in the codebase is paired with `italic`, so
+// the upright face was downloaded on every page and never painted.
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],
   weight: "400",
-  style: ["normal", "italic"],
+  style: ["italic"],
 });
 
 // Only the title template, the RSS alternate and the Twitter card live here.

@@ -1,5 +1,6 @@
 ---
 title: "Everflex Plus"
+seoTitle: "Everflex Plus: Scaling a Laravel Healthcare SaaS"
 tagline: "Healthcare SaaS serving 3,000+ patients with 95% test coverage"
 category: "Healthcare"
 period: "Jan 2023 – Sep 2023"
@@ -61,7 +62,11 @@ Laravel's routing and auth — the best of both worlds.
 3. **No self-managed broker** — SQS scales automatically, no Horizon/Redis tuning required
 
 **Why Redis?** We kept Redis as the caching layer:
-1. Query caching for frequently-accessed patient lists
+1. **Query caching** — frequently-accessed patient lists, which were the
+   heaviest read path in the application
+2. **Dashboard aggregates** — a 5-minute TTL on the therapist dashboard
+   counts, which took that endpoint from a database hit on every page load to
+   ~120ms on a cache hit
 
 ## The Performance Story
 

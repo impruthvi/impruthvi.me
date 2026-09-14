@@ -4,7 +4,7 @@ import path from "node:path";
 import sitemap from "@/app/sitemap";
 import robots from "@/app/robots";
 import { GET as getFeed } from "@/app/rss.xml/route";
-import { getCaseStudies, getPosts } from "@/lib/content";
+import { getCaseStudies, getIndexablePosts, getPosts } from "@/lib/content";
 import { absoluteUrl, breadcrumbSchema, pageMetadata, personSchema } from "@/lib/seo";
 import { site } from "@/lib/site";
 
@@ -68,10 +68,18 @@ describe("sitemap", () => {
       "/about",
       "/contact",
       "/privacy",
-      ...getPosts().map((post) => `/notes/${post.slug}`),
+      ...getIndexablePosts().map((post) => `/notes/${post.slug}`),
       ...getCaseStudies().map((study) => `/work/${study.slug}`),
     ].map((path) => absoluteUrl(path));
     expect(urls.sort()).toEqual(expected.sort());
+  });
+
+  test("noindexed posts are excluded", () => {
+    const withheld = getPosts().filter((post) => post.noindex);
+    expect(withheld.length).toBeGreaterThan(0);
+    for (const post of withheld) {
+      expect(urls).not.toContain(absoluteUrl(`/notes/${post.slug}`));
+    }
   });
 
   test("lastmod is only set where a real content date exists", () => {
@@ -81,8 +89,11 @@ describe("sitemap", () => {
     for (const path of ["/about", "/contact", "/privacy"]) {
       expect(dated.get(absoluteUrl(path))).toBeUndefined();
     }
-    for (const post of getPosts()) {
-      expect(dated.get(absoluteUrl(`/notes/${post.slug}`))).toBe(post.publishedAt);
+    for (const post of getIndexablePosts()) {
+      // A revised post reports when it was revised, not when it first shipped.
+      expect(dated.get(absoluteUrl(`/notes/${post.slug}`))).toBe(
+        post.updatedAt ?? post.publishedAt,
+      );
     }
   });
 });

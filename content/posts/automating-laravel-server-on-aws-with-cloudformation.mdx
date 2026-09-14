@@ -42,7 +42,7 @@ Before we look at the code, let's understand the components our blueprint will c
 - **Internet Gateway:** The doorway that allows our VPC to communicate with the internet.
 - **Public Subnet:** A specific IP address range within our VPC where we'll place our public-facing server. It's configured to automatically assign a public IP to new instances.
 - **Public Route Table & Default Route:** A set of rules that directs all outbound traffic from our subnet to the Internet Gateway.
-- **Security Group:** A virtual firewall to control traffic. We’ll allow access for SSH (port 22), HTTP (port 80), and a custom port (432).
+- **Security Group:** A virtual firewall to control traffic. We’ll allow access for SSH (port 22), HTTP (port 80), and HTTPS (port 443).
 - **EC2 Instance:** Our Ubuntu 22.04 virtual server, using a `t2.micro` instance type for cost-effectiveness.
 
 Here’s the complete CloudFormation template. Create a file named `stack.json` and paste this content into it:
@@ -103,7 +103,7 @@ Here’s the complete CloudFormation template. Create a file named `stack.json` 
     "MySecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Allow SSH, HTTP, and Custom Port Access",
+        "GroupDescription": "Allow SSH, HTTP and HTTPS access",
         "VpcId": { "Ref": "VPC" },
         "SecurityGroupIngress": [
           {
@@ -120,8 +120,8 @@ Here’s the complete CloudFormation template. Create a file named `stack.json` 
           },
           {
             "IpProtocol": "tcp",
-            "FromPort": 432,
-            "ToPort": 432,
+            "FromPort": 443,
+            "ToPort": 443,
             "CidrIp": "0.0.0.0/0"
           }
         ]

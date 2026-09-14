@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getCaseStudies, getPosts } from "@/lib/content";
+import { getCaseStudies, getIndexablePosts } from "@/lib/content";
 import { absoluteUrl } from "@/lib/seo";
 
 /**
@@ -14,19 +14,19 @@ function newest(dates: (string | undefined)[]) {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getPosts();
+  const posts = getIndexablePosts();
   const studies = getCaseStudies();
 
   return [
-    { url: absoluteUrl("/"), lastModified: newest([...posts, ...studies].map((i) => i.publishedAt)) },
-    { url: absoluteUrl("/notes"), lastModified: newest(posts.map((post) => post.publishedAt)) },
+    { url: absoluteUrl("/"), lastModified: newest([...posts.map((p) => p.updatedAt ?? p.publishedAt), ...studies.map((s) => s.publishedAt)]) },
+    { url: absoluteUrl("/notes"), lastModified: newest(posts.map((post) => post.updatedAt ?? post.publishedAt)) },
     { url: absoluteUrl("/work"), lastModified: newest(studies.map((study) => study.publishedAt)) },
     { url: absoluteUrl("/about") },
     { url: absoluteUrl("/contact") },
     { url: absoluteUrl("/privacy") },
     ...posts.map((post) => ({
       url: absoluteUrl(`/notes/${post.slug}`),
-      lastModified: post.publishedAt,
+      lastModified: post.updatedAt ?? post.publishedAt,
     })),
     ...studies.map((study) => ({
       url: absoluteUrl(`/work/${study.slug}`),
