@@ -111,12 +111,18 @@ export async function renderMdx(source: string) {
   function headingIds() {
     return (tree: Root) => {
       const slugger = new GithubSlugger();
+      let hasMainHeading = false;
       function visit(node: Root | RootContent) {
         if (node.type === "heading") {
           const text = toString(node);
           const id = `section-${slugger.slug(text)}`;
           node.data = { ...node.data, hProperties: { ...node.data?.hProperties, id } };
-          if (node.depth === 2) headings.push({ text, id });
+          // Older posts use an h3 for the introduction before their h2 sections.
+          // Include those opening headings without listing every subsection.
+          if (node.depth <= 2 || (node.depth === 3 && !hasMainHeading)) {
+            headings.push({ text, id });
+          }
+          if (node.depth <= 2) hasMainHeading = true;
         }
         if ("children" in node) node.children.forEach(visit);
       }

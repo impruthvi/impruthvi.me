@@ -69,4 +69,17 @@ describe("restored content", () => {
     expect(xml).toContain("&amp;");
     expect(xml).not.toContain("Invalid Date");
   });
+
+  test("navigation includes legacy introductions without promoting nested subsections", async () => {
+    const { content, headings } = await renderMdx([
+      "### Introduction", "Opening paragraph.",
+      "## The Setup", "### Install dependencies", "Details.",
+      "## What I Learned", "Closing paragraph.",
+    ].join("\n\n"));
+    expect(headings.map((heading) => heading.text)).toEqual([
+      "Introduction", "The Setup", "What I Learned",
+    ]);
+    const html = renderToStaticMarkup(content);
+    for (const heading of headings) expect(html).toContain(`id="${heading.id}"`);
+  });
 });

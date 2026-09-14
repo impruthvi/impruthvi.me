@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getPost, getPosts } from "@/lib/content";
 import { renderMdx } from "@/components/mdx";
+import { ArticleToc } from "@/components/article-toc";
 import { ArrowLeft, ArrowUpRight, Container, Label } from "@/components/ui";
 
 export function generateStaticParams() {
@@ -78,20 +79,7 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
 
       <Container className="border-rule border-t py-12 lg:py-14">
         <div className="flex flex-col gap-10 lg:flex-row lg:gap-20">
-          {headings.length > 1 ? (
-            <nav aria-label="On this page" className="flex flex-col gap-3.5 lg:sticky lg:top-12 lg:max-h-[calc(100dvh-6rem)] lg:w-[14.5rem] lg:shrink-0 lg:overflow-y-auto">
-              <Label>On this page</Label>
-              {headings.map((heading) => (
-                <a
-                  key={heading.id}
-                  href={`#${heading.id}`}
-                  className="text-muted hover:text-ink text-[0.9375rem] leading-6 transition-colors"
-                >
-                  {heading.text}
-                </a>
-              ))}
-            </nav>
-          ) : null}
+          {headings.length > 1 ? <ArticleToc key={post.slug} headings={headings} /> : null}
 
           <article className="mdx-content max-w-measure flex min-w-0 flex-1 flex-col gap-6">
             {content}
