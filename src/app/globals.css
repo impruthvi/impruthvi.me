@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+/* Theme is class-driven, not media-driven: `.dark` on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Palette — mood: signage (painted highway/shop signage, and the same sign lit
+   at night). Every value is derived from one of those two scenes.
+
+   Roles, so the dark overrides read as a straight swap:
+     ground        page background
+     ink           primary foreground
+     muted         secondary foreground
+     rule          hairline between rows and sections
+     wash          raised surface: diagrams, footer, media slots
+     band          the full-bleed feature band
+     hairline      hairlines *inside* wash/band surfaces
+     accent        chrome yellow, rationed
+--------------------------------------------------------------------------- */
+
+:root {
+  --ground: #ffffff;
+  --ink: #0e0e0e;
+  --muted: #6b6b6b;
+  --rule: #e4e3e0;
+  --wash: #f5f4f1;
+  --hairline: #d6d4cf;
+
+  /* In light mode the band inverts to ink, so everything on it flips too. */
+  --band: #0e0e0e;
+  --on-band: #f7f6f3;
+  --prose-on-band: #a3a29f;
+  --label-on-band: #8a8a88;
+  --seam-on-band: rgb(255 255 255 / 18%);
+
+  --prose: #3a3a38;
+  --accent: #ffc400;
+  --on-accent: #0e0e0e;
+  --code-bg: #0e0e0e;
+  --code-fg: #e8e6e1;
+}
+
+.dark {
+  --ground: #0b0b0c;
+  --ink: #f2f0ec;
+  --muted: #8b8a87;
+  --rule: #26262b;
+  --wash: #141416;
+  --hairline: #2e2e33;
+
+  /* On a dark page the band lifts instead of inverting — a white slab would
+     glare, and chrome yellow dies on near-white. */
+  --band: #131316;
+  --on-band: #f2f0ec;
+  --prose-on-band: #a3a29f;
+  --label-on-band: #8a8a88;
+  --seam-on-band: rgb(255 255 255 / 16%);
+
+  --prose: #c9c7c2;
+  --accent: #ffc400;
+  --on-accent: #0e0e0e;
+  --code-bg: #16161a;
+  --code-fg: #e8e6e1;
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-wash: var(--wash);
+  --color-hairline: var(--hairline);
+  --color-band: var(--band);
+  --color-on-band: var(--on-band);
+  --color-prose: var(--prose);
+  --color-prose-on-band: var(--prose-on-band);
+  --color-label-on-band: var(--label-on-band);
+  --color-seam-on-band: var(--seam-on-band);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-code-bg: var(--code-bg);
+  --color-code-fg: var(--code-fg);
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+
+  /* Type scale. Display sizes are fluid — the poster headline has to survive
+     a 390px viewport without breaking a word mid-glyph. */
+  --text-label: 0.75rem;
+  --text-label--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.375rem;
+  --text-body: 1.125rem;
+  --text-body--line-height: 1.875rem;
+  --text-lead: 1.5rem;
+  --text-lead--line-height: 2.25rem;
+  --text-h3: 2rem;
+  --text-h3--line-height: 2.375rem;
+  --text-h2: clamp(2.125rem, 1.2rem + 3.6vw, 3.5rem);
+  --text-h2--line-height: 1.04;
+  --text-h1: clamp(2.875rem, 0.9rem + 7.4vw, 6.5rem);
+  --text-h1--line-height: 0.96;
+  --text-article-title: clamp(2.25rem, 1.2rem + 4vw, 4.5rem);
+  --text-article-title--line-height: 1.04;
+  --text-display: clamp(1.75rem, 9.1vw, 8rem);
+  --text-display--line-height: 0.92;
+
+  --tracking-caps: 0.12em;
+  --tracking-tight: -0.025em;
+  --tracking-display: -0.035em;
+
+  --spacing-gutter: 1.5rem;
+  --spacing-gutter-lg: 6rem;
+  --container-measure: 43.5rem;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    /* Kill the flash when the toggle swaps themes, but never animate for
+       people who asked us not to. */
+    color-scheme: light;
+  }
+
+  .dark html,
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    overflow-wrap: anywhere;
+  }
+
+  .mdx-content {
+    overflow-wrap: anywhere;
+  }
+
+  .mdx-content pre {
+    overflow-wrap: normal;
+  }
+
+  .mdx-content li > ul,
+  .mdx-content li > ol {
+    margin-top: 0.5rem;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* sugar-high token colours. Muted on purpose — a code block should read as
+   one object on the page, not a rainbow competing with the accent. */
+@layer base {
+  :root {
+    --sh-class: #7aa2f7;
+    --sh-identifier: #d5d3ce;
+    --sh-sign: #7c7a75;
+    --sh-property: #e0af68;
+    --sh-entity: #9ece6a;
+    --sh-jsxliterals: #bb9af7;
+    --sh-string: #9ece6a;
+    --sh-keyword: #f7768e;
+    --sh-comment: #6b6a66;
+  }
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
