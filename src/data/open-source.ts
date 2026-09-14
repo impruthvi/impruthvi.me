@@ -34,11 +34,11 @@ export const openSourceData: OpenSourceItem[] = [
     techStack: ["TypeScript", "React", "Laravel"],
   },
   {
-    name: "@impruthvi/nodemail",
+    name: "laramail",
     type: "package",
     description:
       "Built a TypeScript email library for Node.js with Laravel-inspired APIs, provider failover, queues, and template-based delivery.",
-    url: "https://github.com/impruthvi/nodemail",
+    url: "https://github.com/impruthvi/laramail",
     techStack: ["TypeScript", "Node.js", "BullMQ"],
   },
   {

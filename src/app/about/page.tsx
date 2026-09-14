@@ -42,7 +42,7 @@ export default function AboutPage() {
             <p className="text-prose text-body">
               At Ricefwtech, I work across architecture, feature development,
               and code review with distributed teams. Outside of work, I build
-              developer tools like nodemail, contribute to the Laravel
+              developer tools like laramail, contribute to the Laravel
               ecosystem, and ship products of my own like BrandArc.
             </p>
           </div>
