@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { site } from "@/lib/site";
 import { Container } from "@/components/ui";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileNav } from "@/components/mobile-nav";
+import { SiteNavLinks } from "@/components/site-nav-links";
 
 export function SiteHeader() {
   return (
@@ -15,16 +15,8 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-10 md:flex">
-          {site.nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="label text-muted hover:text-ink transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav aria-label="Main navigation" className="hidden items-center gap-10 md:flex">
+          <SiteNavLinks />
           <ThemeToggle />
         </nav>
 

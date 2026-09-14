@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { site } from "@/lib/site";
 import { Chip } from "@/components/ui";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteNavLinks } from "@/components/site-nav-links";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -96,16 +96,7 @@ export function MobileNav() {
         </div>
 
         <nav aria-label="Main navigation" className="flex flex-col px-6 pt-6">
-          {site.nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="border-seam-on-band text-on-band font-display border-b py-5 text-[2.75rem] leading-none font-black tracking-[-0.035em] uppercase"
-            >
-              {item.label}
-            </Link>
-          ))}
+          <SiteNavLinks mobile onNavigate={() => setOpen(false)} />
         </nav>
 
         <div className="mt-auto flex flex-col gap-6 px-6 pt-10 pb-9">
