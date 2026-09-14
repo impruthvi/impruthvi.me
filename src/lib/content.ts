@@ -33,6 +33,11 @@ export type Post = {
   body: string;
 };
 
+/** `draft: true` in the frontmatter keeps a file in the repo but off the site. */
+export function isDraft(raw: string) {
+  return Boolean(matter(raw).data.draft);
+}
+
 function readDir(dir: string) {
   const full = path.join(CONTENT_DIR, dir);
   if (!fs.existsSync(full)) return [];
@@ -43,7 +48,8 @@ function readDir(dir: string) {
       const raw = fs.readFileSync(path.join(full, file), "utf8");
       const { data, content } = matter(raw);
       return { slug: file.replace(/\.mdx$/, ""), data, body: content };
-    });
+    })
+    .filter(({ data }) => !data.draft);
 }
 
 /** ~220 wpm, rounded up. Close enough that nobody has ever checked. */

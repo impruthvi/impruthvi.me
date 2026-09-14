@@ -3,18 +3,25 @@ import fs from "node:fs";
 import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { renderMdx } from "@/components/mdx";
-import { getCaseStudies, getPosts, postsByYear } from "@/lib/content";
+import { getCaseStudies, getPosts, isDraft, postsByYear } from "@/lib/content";
 import { GET as getFeed } from "@/app/rss.xml/route";
 
+/** Files the site is expected to publish — drafts are deliberately withheld. */
+function publishedFiles(dir: string) {
+  return fs
+    .readdirSync(path.join("content", dir))
+    .filter((file) => file.endsWith(".mdx"))
+    .filter((file) => !isDraft(fs.readFileSync(path.join("content", dir, file), "utf8")))
+    .sort();
+}
+
 describe("restored content", () => {
-  test("every MDX file is discoverable, dated, and backed by existing artwork", () => {
+  test("every published MDX file is discoverable, dated, and backed by existing artwork", () => {
     const posts = getPosts();
     const studies = getCaseStudies();
-    expect(posts.map((post) => `${post.slug}.mdx`).sort()).toEqual(
-      fs.readdirSync("content/posts").filter((file) => file.endsWith(".mdx")).sort(),
-    );
+    expect(posts.map((post) => `${post.slug}.mdx`).sort()).toEqual(publishedFiles("posts"));
     expect(studies.map((study) => `${study.slug}.mdx`).sort()).toEqual(
-      fs.readdirSync("content/case-studies").filter((file) => file.endsWith(".mdx")).sort(),
+      publishedFiles("case-studies"),
     );
     for (const item of [...posts, ...studies]) {
       expect(item.title.length).toBeGreaterThan(0);
@@ -27,6 +34,19 @@ describe("restored content", () => {
     const dates = posts.map((post) => post.publishedAt);
     expect(dates).toEqual([...dates].sort().reverse());
     expect(postsByYear().flatMap((group) => group.items)).toEqual(posts);
+  });
+
+  test("drafts stay on disk but out of every listing", () => {
+    const drafts = ["posts", "case-studies"].flatMap((dir) =>
+      fs
+        .readdirSync(path.join("content", dir))
+        .filter((file) => file.endsWith(".mdx"))
+        .filter((file) => isDraft(fs.readFileSync(path.join("content", dir, file), "utf8")))
+        .map((file) => file.replace(/\.mdx$/, "")),
+    );
+    expect(drafts).toContain("biznetworkpro");
+    const published = [...getPosts(), ...getCaseStudies()].map((entry) => entry.slug);
+    for (const slug of drafts) expect(published).not.toContain(slug);
   });
 
   test("every restored body compiles and every navigation anchor renders", async () => {
