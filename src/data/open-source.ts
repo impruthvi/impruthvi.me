@@ -1,73 +1,66 @@
 export interface OpenSourceItem {
   name: string;
-  type: "package" | "contribution";
+  type: "package" | "contribution" | "maintainer";
   description: string;
   url: string;
-  docsUrl?: string;
-  prUrl?: string;
-  websiteUrl?: string;
-  badge?: string;
   techStack: string[];
 }
 
 export const openSourceData: OpenSourceItem[] = [
   {
-    name: "Laravel React Starter Kit: PR #46",
+    name: "Cashier Dunning",
+    type: "package",
+    description:
+      "Test Stripe billing lifecycles offline by replaying signed webhooks through Laravel applications, covering failures, retries, cancellations, and other difficult billing states.",
+    url: "https://github.com/impruthvi/cashier-dunning",
+    techStack: ["PHP", "Laravel", "Stripe"],
+  },
+  {
+    name: "Laravel Boost",
     type: "contribution",
     description:
-      "Fixed TypeScript form handling bug in useForm hook, improving API consistency and preventing missing field submissions.",
+      "Contributed improvements to Laravel Boost, an official Laravel package, with changes merged into the upstream project.",
+    url: "https://github.com/laravel/boost/pulls?q=is%3Apr+is%3Aclosed+author%3Aimpruthvi",
+    techStack: ["PHP", "Laravel"],
+  },
+  {
+    name: "Laravel React Starter Kit",
+    type: "contribution",
+    description:
+      "Improved TypeScript form handling in the useForm hook, preventing missing fields and making form submissions more consistent.",
     url: "https://github.com/laravel/react-starter-kit/pull/46",
-    prUrl: "https://github.com/laravel/react-starter-kit/pull/46",
-    badge: "Merged by @taylorotwell",
     techStack: ["TypeScript", "React", "Laravel"],
   },
   {
-    name: "Mobile-Responsive Drawer: PR #57",
+    name: "Laravel React Starter Kit",
     type: "contribution",
     description:
-      "Designed and implemented a responsive drawer component improving mobile navigation UX across Laravel starter kit.",
+      "Built a mobile-responsive navigation drawer, improving navigation and usability across smaller screens.",
     url: "https://github.com/laravel/react-starter-kit/pull/57",
-    prUrl: "https://github.com/laravel/react-starter-kit/pull/57",
-    badge: "Positive review from @tnylea",
     techStack: ["React", "TypeScript", "Laravel"],
-  },
-  {
-    name: "Laravel Boost: 4 PRs",
-    type: "contribution",
-    description:
-      "4 pull requests merged into Laravel Boost, an official Laravel package under the laravel GitHub organisation.",
-    url: "https://github.com/laravel/boost/pulls?q=is%3Apr+is%3Aclosed+author%3Aimpruthvi",
-    prUrl: "https://github.com/laravel/boost/pulls?q=is%3Apr+is%3Aclosed+author%3Aimpruthvi",
-    badge: "4 PRs Merged",
-    techStack: ["PHP", "Laravel"],
   },
   {
     name: "@impruthvi/nodemail",
     type: "package",
     description:
-      "Laravel-inspired email library for Node.js with full TypeScript support, multi-provider failover (SendGrid, AWS SES, Mailgun, Resend, Postmark), BullMQ queue integration, and template engines.",
+      "Built a TypeScript email library for Node.js with Laravel-inspired APIs, provider failover, queues, and template-based delivery.",
     url: "https://github.com/impruthvi/nodemail",
-    docsUrl: "https://nodemail.impruthvi.me",
-    badge: "300+ weekly downloads",
     techStack: ["TypeScript", "Node.js", "BullMQ"],
   },
   {
     name: "ShipFastLabs / Starter Kit",
-    type: "contribution",
+    type: "maintainer",
     description:
-      "Maintaining the ShipFastLabs Laravel starter kit: batteries-included boilerplate for shipping SaaS products fast.",
+      "Maintaining a Laravel SaaS foundation designed to accelerate the development of production-ready SaaS applications.",
     url: "https://shipfastlabs.com/",
-    websiteUrl: "https://shipfastlabs.com/",
-    badge: "Maintainer",
     techStack: ["Laravel", "PHP"],
   },
   {
     name: "ShipFastLabs / parsel",
     type: "contribution",
     description:
-      "PHP library that parses PDFs, Office docs, and images locally, extracting plain text, structured data, and coordinates without sending files to an external service.",
+      "Contributed to a PHP document parser for extracting text and structured data from PDFs, Office documents, and images locally.",
     url: "https://github.com/shipfastlabs/parsel",
-    badge: "Contributor",
     techStack: ["Laravel", "PHP"],
   },
 ];
