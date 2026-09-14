@@ -72,6 +72,9 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
               fill
               sizes="(min-width: 1440px) 1248px, (min-width: 1024px) calc(100vw - 192px), calc(100vw - 48px)"
               className="object-contain"
+              // The poster sits just under the title, so it is the LCP element
+              // on every article. Lazy loading it defers the largest paint.
+              loading="eager"
             />
           </div>
         </Container>
