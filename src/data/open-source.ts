@@ -28,16 +28,10 @@ export const openSourceData: OpenSourceItem[] = [
     type: "contribution",
     description:
       "Improved TypeScript form handling in the useForm hook, preventing missing fields and making form submissions more consistent.",
-    url: "https://github.com/laravel/react-starter-kit/pull/46",
+    // Laravel has issues and pull requests disabled on this repo, so /pull/46
+    // now 404s. The merge commit is permanent and carries the authorship.
+    url: "https://github.com/laravel/react-starter-kit/commit/799c3c2774e58d5728c6e8e44a9d881e28f2893a",
     techStack: ["TypeScript", "React", "Laravel"],
-  },
-  {
-    name: "Laravel React Starter Kit",
-    type: "contribution",
-    description:
-      "Built a mobile-responsive navigation drawer, improving navigation and usability across smaller screens.",
-    url: "https://github.com/laravel/react-starter-kit/pull/57",
-    techStack: ["React", "TypeScript", "Laravel"],
   },
   {
     name: "@impruthvi/nodemail",
