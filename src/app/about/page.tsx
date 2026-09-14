@@ -23,18 +23,27 @@ export default function AboutPage() {
               From the database to the details.
             </h1>
             <p className="text-prose text-body">
-              I&rsquo;m Pruthvisinh, a software developer based in Ahmedabad.
-              I build Laravel, Node.js and React applications for healthcare,
-              property management and business software. My work spans payment
-              integrations, database performance and the interfaces people use
-              every day.
+              I&rsquo;m Pruthvisinh, a software developer in Ahmedabad, working
+              mostly with Laravel and backend systems. Over the past five years,
+              I&rsquo;ve worked on software where reliability matters, from
+              property reservations processing $50K+ monthly through Stripe to
+              healthcare platforms serving 3,000+ patients and approval
+              workflows that cut fraudulent transactions by 90%.
             </p>
             <p className="text-prose text-body">
-              At Ricefwtech, I work on architecture, code reviews and product
-              improvements across distributed teams. Outside that work, I build
-              products including BrandArc and BizNetworkPro, contribute to the
-              Laravel ecosystem, and write about the tools and decisions behind
-              those projects.
+              The hard part is rarely the feature. It&rsquo;s the edge cases
+              that show up after software leaves the happy path: the N+1 query
+              that only appears at 50,000 users, the webhook delivered twice, or
+              the failed payment nobody tested. That last problem led me to
+              build Cashier Dunning, an open-source Laravel package that replays
+              failures, retries, cancellations, resubscriptions, and duplicate
+              webhooks from a Stripe billing lifecycle, locally and in CI.
+            </p>
+            <p className="text-prose text-body">
+              At Ricefwtech, I work across architecture, feature development,
+              and code review with distributed teams. Outside of work, I build
+              developer tools like nodemail, contribute to the Laravel
+              ecosystem, and ship products of my own like BrandArc.
             </p>
           </div>
 
