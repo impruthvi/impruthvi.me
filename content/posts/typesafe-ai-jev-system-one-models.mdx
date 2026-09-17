@@ -715,6 +715,42 @@ I like that separation.
 
 It keeps business rules, authorization, side effects, and safety constraints inside normal application code instead of burying them inside prompts.
 
+### Laravel May Be Exploring This Too
+
+Interestingly, the same idea is already being explored in the Laravel ecosystem.
+
+[Pushpak](https://pushpak1300.me/) opened a [draft pull request to the Laravel AI SDK](https://github.com/laravel/ai/pull/1010) proposing a new `Classification` API built around the same kinds of decision primitives discussed in this article: `Boolean`, `Choice`, and `Score`.
+
+For example:
+
+```php
+$result = Classification::of($supportRequest)
+    ->questions([
+        'urgent' => new Boolean(
+            'Does this request need an immediate response?'
+        ),
+
+        'department' => new Choice(
+            'Which team should handle this request?',
+            [
+                'billing' => 'Payments, invoices, and refunds',
+                'technical' => 'Bugs, outages, and integrations',
+                'sales' => 'Pricing, plans, and upgrades',
+            ]
+        ),
+
+        'frustration' => new Score(
+            'How frustrated is the customer?',
+            [
+                'Calm',
+                'Frustrated',
+                'Very angry',
+            ]
+        ),
+    ])
+    ->classify();
+```
+
 ## Jev Is Not an LLM Replacement
 
 There are plenty of things I would still want a generative model to handle.
