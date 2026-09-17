@@ -1,0 +1,911 @@
+---
+title: "What If AI Didn't Generate Text? Inside TypeSafe AI's Jev"
+seoTitle: "TypeSafe AI Jev: A New Approach to AI Decisions in Software"
+tagline: "TypeSafe AI's Jev replaces generated text with typed, probabilistic decisions built for software automation"
+category: "AI / Engineering"
+period: "Sep 2026"
+role: "Research & Technical Analysis"
+publishedAt: "2026-09-17"
+---
+
+## We Might Be Using LLMs for the Wrong Job
+
+Most AI applications today follow roughly the same pattern:
+
+```text
+Application
+    ↓
+Large Language Model
+    ↓
+Generate Tokens
+    ↓
+Parse JSON
+    ↓
+Validate Schema
+    ↓
+Handle Errors
+    ↓
+Application Logic
+```
+
+This makes sense when the output is actually language.
+
+Writing an email? Generate text.
+
+Explaining some code? Generate text.
+
+Having a conversation? Generate text.
+
+But a surprising amount of production AI isn't really asking the model to *write* anything.
+
+We're asking questions like:
+
+- Which department should handle this ticket?
+- Is this transaction suspicious?
+- Should this agent retry?
+- Which tool should be called next?
+- How urgent is this request?
+- Does this output violate a policy?
+- Should this workflow continue or stop?
+
+These are **decisions**, not writing tasks.
+
+Yet we still send them through models designed to generate language one token at a time.
+
+TypeSafe AI is exploring a very different idea:
+
+> What if the model didn't generate text at all?
+
+Their first public model, **Jev**, is designed around exactly that question.
+
+## What Is TypeSafe AI?
+
+TypeSafe AI is building what it calls **System One Models**: AI models designed specifically for making decisions inside software.
+
+Its first public model, Jev, was announced in September 2026.
+
+Instead of:
+
+```text
+Prompt → Generated Text → Parse → Validate → Use
+```
+
+Jev works more like:
+
+```text
+Application State
+        ↓
+       Jev
+        ↓
+Typed Decisions + Probabilities
+        ↓
+Application Logic
+```
+
+TypeSafe describes this as:
+
+```text
+Unstructured state in
+        ↓
+Typed probabilistic decisions out
+```
+
+That sounds like a small distinction.
+
+Architecturally, it is a pretty significant one.
+
+## LLMs Were Designed to Generate Strings
+
+Traditional language models generate output sequentially.
+
+Given:
+
+```text
+The customer says they were charged twice.
+```
+
+we might ask an LLM:
+
+```text
+Classify this support ticket.
+
+Return JSON containing:
+- department
+- priority
+- requires_refund
+```
+
+And receive:
+
+```json
+{
+  "department": "billing",
+  "priority": "high",
+  "requires_refund": true
+}
+```
+
+Modern structured-output APIs make this much more reliable than it used to be.
+
+But conceptually, the model is still operating as a generative model.
+
+It generates an output that must fit the structure we've requested.
+
+Jev approaches the problem differently.
+
+The possible decisions are defined before inference.
+
+For example:
+
+```ts
+const result = await evaluate({
+    model: 'typesafe-ai/jev',
+
+    state: {
+        message: 'I was charged twice for my subscription.'
+    },
+
+    questions: {
+        department: {
+            type: 'choice',
+            options: [
+                'billing',
+                'technical',
+                'account'
+            ]
+        },
+
+        urgent: {
+            type: 'boolean'
+        }
+    }
+});
+```
+
+Instead of asking:
+
+> "Generate JSON that looks like this."
+
+we're effectively asking:
+
+> "Evaluate these predefined decisions against this state."
+
+That is a much better abstraction for certain kinds of backend systems.
+
+## System One Models
+
+The name comes from the System 1 / System 2 distinction popularized by Daniel Kahneman.
+
+Very roughly:
+
+```text
+System 1
+Fast
+Immediate
+Pattern-based decisions
+
+System 2
+Slow
+Deliberate
+Reasoning-heavy
+```
+
+Modern reasoning models are increasingly optimized for the second category.
+
+They may spend seconds, or sometimes much longer, reasoning before producing an answer.
+
+TypeSafe is deliberately moving in the opposite direction.
+
+Jev is optimized for:
+
+```text
+classify
+route
+score
+extract
+verify
+branch
+```
+
+Instead of:
+
+```text
+write
+explain
+reason at length
+generate
+converse
+```
+
+This doesn't make Jev a replacement for LLMs.
+
+It makes it a different primitive.
+
+## Decisions Instead of Strings
+
+Consider a support system.
+
+An LLM-based implementation might look conceptually like this:
+
+```php
+$response = $llm->generate("
+    Analyze this support ticket.
+
+    Return JSON containing:
+
+    department: billing|technical|account
+    priority: low|medium|high
+    refund_required: boolean
+");
+
+$data = json_decode($response);
+
+validate($data);
+
+routeTicket($data);
+```
+
+There are multiple layers between intelligence and application logic:
+
+```text
+Model
+ ↓
+Tokens
+ ↓
+String
+ ↓
+JSON
+ ↓
+Validation
+ ↓
+Application
+```
+
+A decision model collapses much of this.
+
+```text
+Model
+ ↓
+Typed Decision
+ ↓
+Application
+```
+
+That is what makes the TypeSafe idea interesting from a backend engineering perspective.
+
+## Confidence Is Part of the Interface
+
+The part I find more interesting than type safety is **uncertainty**.
+
+Jev returns probabilities and confidence information alongside decisions.
+
+That means software doesn't need to treat every AI answer equally.
+
+Imagine a ticket-routing system.
+
+```php
+if ($decision->confidence >= 0.98) {
+    $ticket->routeAutomatically();
+} elseif ($decision->confidence >= 0.80) {
+    $ticket->routeAndFlagForReview();
+} else {
+    $ticket->sendToHumanReview();
+}
+```
+
+Now the architecture becomes:
+
+```text
+                     ┌── High confidence ──→ Automate
+                     │
+Input ──→ Jev ───────┼── Medium ──────────→ Automate + Review
+                     │
+                     └── Low confidence ───→ Human
+```
+
+This is much closer to how I would want probabilistic software to behave in production.
+
+The AI doesn't control the workflow.
+
+**The application does.**
+
+The model simply supplies another signal.
+
+## AI as a Smart If Statement
+
+One useful way to think about Jev is as a fuzzy version of application logic.
+
+Traditional software might contain:
+
+```php
+if ($ticket->contains('refund')) {
+    $department = 'billing';
+}
+```
+
+That works until users write:
+
+```text
+I paid yesterday but the amount appears twice on my statement.
+```
+
+Now our deterministic rule starts falling apart.
+
+An AI decision model can provide the semantic judgment:
+
+```text
+P(billing) = 0.97
+P(technical) = 0.02
+P(account) = 0.01
+```
+
+while normal code remains responsible for what happens next.
+
+```php
+if ($billingProbability > 0.95) {
+    $ticket->assignTo('billing');
+}
+```
+
+That's a very different architecture from handing an entire workflow to an autonomous agent.
+
+## Where Jev Could Be Useful
+
+The obvious use cases are places where software needs semantic judgment but doesn't need generated language.
+
+### Support Routing
+
+```text
+Ticket
+   ↓
+Jev
+   ↓
+Department
+Priority
+Escalation probability
+Refund-review probability
+```
+
+### Fraud and Risk Signals
+
+```text
+Transaction
+   ↓
+Jev
+   ↓
+Risk score
+Suspicious?
+Requires manual review?
+```
+
+### Agent Control
+
+An AI agent constantly makes decisions like:
+
+```text
+Should I call another tool?
+
+Should I retry?
+
+Did the previous step succeed?
+
+Do I need more information?
+
+Should I stop?
+```
+
+Those decisions don't necessarily need another generative response.
+
+### Guardrails
+
+A separate decision model could evaluate:
+
+```text
+Is this output safe?
+
+Did the model follow the requested format?
+
+Does this answer contradict the provided context?
+
+Should this response be blocked?
+```
+
+### Large-Scale Classification
+
+If you're processing millions of records, generating explanatory text for every classification is wasted computation.
+
+Sometimes you only need:
+
+```text
+yes / no
+
+A / B / C
+
+1–5
+
+probability
+```
+
+This is exactly the kind of workload Jev targets.
+
+## Parallel Decisions Change the Cost Model
+
+LLMs generate tokens sequentially.
+
+Conceptually:
+
+```text
+token₁
+  ↓
+token₂
+  ↓
+token₃
+  ↓
+token₄
+  ↓
+...
+```
+
+Jev's architecture is designed to evaluate declared decisions in parallel.
+
+```text
+                  ┌─→ Department
+                  │
+Application State ├─→ Priority
+                  │
+                  ├─→ Fraud Risk
+                  │
+                  └─→ Needs Review
+```
+
+For workflows containing many independent decisions, this can remove a large amount of unnecessary sequential generation.
+
+That's where TypeSafe's performance claims become interesting.
+
+## 193.6× Faster and 444.6× Cheaper?
+
+TypeSafe reports that Jev reached up to:
+
+```text
+193.6× faster
+444.6× cheaper
+```
+
+than LLM-based approaches on its System One workflow evaluations.
+
+It also advertises pricing around:
+
+```text
+$42 / billion input tokens
+```
+
+with output decisions effectively too inexpensive to meter separately.
+
+Those numbers are impressive.
+
+But they need an important asterisk.
+
+These are **TypeSafe's own workflow evaluations**, not an independent industry benchmark.
+
+TypeSafe itself acknowledges several limitations in its published evaluation methodology, including the possibility of bias from workflows created internally.
+
+So I wouldn't interpret this as:
+
+```text
+Jev is 444× better than LLMs.
+```
+
+The more accurate interpretation is:
+
+```text
+For certain decision-shaped workloads,
+removing autoregressive text generation
+can make inference dramatically cheaper and faster.
+```
+
+That architectural result is more interesting than the headline number anyway.
+
+## "Zero Hallucinations" Needs an Asterisk
+
+TypeSafe describes Jev as having zero hallucinations because its outputs are constrained to predefined types.
+
+Suppose the allowed result is:
+
+```text
+billing
+technical
+account
+```
+
+Jev cannot suddenly return:
+
+```text
+banana
+```
+
+That's valuable.
+
+But there's an important distinction:
+
+```text
+Type correctness
+        ≠
+Semantic correctness
+```
+
+Jev could return:
+
+```text
+billing
+```
+
+when the correct answer was actually:
+
+```text
+account
+```
+
+The result is perfectly valid according to the type system.
+
+It's still wrong.
+
+So I think the stronger engineering claim isn't:
+
+> AI can no longer be wrong.
+
+It's:
+
+> AI can be prevented from producing outputs outside the application's expected decision space.
+
+That is still extremely useful.
+
+It just solves a different problem.
+
+## Jev vs Structured Outputs
+
+This is probably the first question most developers will ask.
+
+Modern LLM APIs already support JSON schemas and structured outputs.
+
+So why do we need another model?
+
+The difference is primarily architectural.
+
+### LLM + Structured Output
+
+```text
+General-purpose generative model
+        ↓
+Generate tokens
+        ↓
+Constrain generation
+        ↓
+Structured result
+```
+
+### Jev
+
+```text
+Decision-focused model
+        ↓
+Evaluate predefined questions
+        ↓
+Typed probabilistic result
+```
+
+Structured output makes an LLM behave more like a function.
+
+Jev is designed around being that function.
+
+Whether this distinction matters enough in real production workloads is something developers will now get to test.
+
+## A Laravel Example
+
+Imagine I'm building a helpdesk application in Laravel.
+
+When a ticket arrives:
+
+```php
+$ticket = Ticket::create([
+    'subject' => $request->subject,
+    'description' => $request->description,
+]);
+```
+
+Instead of writing brittle keyword rules or asking an LLM to generate a JSON response, the application could evaluate several decisions:
+
+```text
+State:
+
+{
+    subject,
+    description,
+    customer,
+    previousTickets
+}
+
+Questions:
+
+department
+priority
+needsEscalation
+possibleDuplicate
+refundRelated
+```
+
+Then application code decides what happens.
+
+```php
+if ($decision->department->confidence > 0.95) {
+    $ticket->assignDepartment(
+        $decision->department->value
+    );
+}
+
+if ($decision->needsEscalation->probability > 0.90) {
+    EscalateTicket::dispatch($ticket);
+}
+```
+
+The important architectural boundary remains:
+
+```text
+AI decides what something probably means.
+
+Code decides what the system is allowed to do.
+```
+
+I like that separation.
+
+## Jev Is Not an LLM Replacement
+
+There are plenty of things I would still want a generative model to handle.
+
+```text
+Write an email           → LLM
+Explain an error         → LLM
+Generate code            → LLM
+Summarize a document     → LLM
+Chat with a customer     → LLM
+
+Route a ticket           → Decision model
+Score urgency            → Decision model
+Select a tool            → Decision model
+Detect risky output      → Decision model
+Decide whether to retry  → Decision model
+```
+
+The interesting future might not be:
+
+```text
+Jev vs LLM
+```
+
+It might be:
+
+```text
+                  Application
+                       │
+             ┌─────────┴─────────┐
+             │                   │
+             ▼                   ▼
+       Decision Model      Generative Model
+             │                   │
+     classify / route       write / reason
+     score / verify         explain / create
+             │                   │
+             └─────────┬─────────┘
+                       ▼
+                 Application
+```
+
+Different models for different jobs.
+
+## This Could Change Agent Architecture
+
+Today's agents frequently use a large model for almost everything.
+
+```text
+Understand request
+      ↓
+Choose tool
+      ↓
+Evaluate result
+      ↓
+Choose next tool
+      ↓
+Determine completion
+      ↓
+Generate response
+```
+
+But only the final step necessarily requires language generation.
+
+A future agent could look more like:
+
+```text
+                    User
+                     │
+                     ▼
+                LLM Planner
+                     │
+                     ▼
+               Application
+                     │
+              ┌──────┴──────┐
+              │             │
+              ▼             ▼
+             Jev          Tools
+              │             │
+              └──────┬──────┘
+                     ▼
+              Workflow State
+                     │
+                     ▼
+                    Jev
+                     │
+             Continue / Retry /
+              Escalate / Stop
+                     │
+                     ▼
+                    LLM
+                     │
+                     ▼
+                Final Response
+```
+
+Instead of asking an expensive generative model to make every tiny decision, specialized decision models could handle the control plane.
+
+That could make agents cheaper, faster, and easier to constrain.
+
+## Vercel Is Already Experimenting With This Abstraction
+
+Jev became available through Vercel AI Gateway shortly after its release.
+
+AI SDK exposes the model through an experimental `evaluate` API with decision primitives including:
+
+```text
+Choice
+Score
+Boolean
+```
+
+That is interesting because the abstraction isn't:
+
+```ts
+generateText()
+```
+
+or even:
+
+```ts
+generateObject()
+```
+
+It's:
+
+```ts
+evaluate()
+```
+
+That API name captures the architectural difference surprisingly well.
+
+## The Bigger Idea
+
+For the last few years, the default architecture for adding intelligence to software has basically been:
+
+```text
+Need intelligence?
+
+Call an LLM.
+```
+
+That probably won't remain true forever.
+
+We already use specialized models for:
+
+```text
+embeddings
+image generation
+speech recognition
+reranking
+vision
+```
+
+Decision models could become another primitive:
+
+```text
+generation models
+        +
+reasoning models
+        +
+embedding models
+        +
+decision models
+```
+
+If that happens, backend developers may start thinking about AI less like a chatbot embedded inside an application and more like another computational primitive.
+
+Something closer to:
+
+```php
+$result = evaluate($state);
+```
+
+than:
+
+```php
+$response = prompt($model);
+```
+
+## What I'm Watching Next
+
+Jev is extremely new.
+
+TypeSafe only publicly released it in September 2026, so production evidence is still limited.
+
+The questions I care about aren't really whether it can win a benchmark.
+
+They're:
+
+1. How well calibrated are the confidence scores on real application data?
+2. How does accuracy change with large decision spaces?
+3. How does Jev compare with structured-output LLMs on the same production workflow?
+4. What happens when application state becomes very large?
+5. Can decision models reliably control agent loops?
+6. How much latency disappears when dozens of decisions are evaluated concurrently?
+7. How should teams test probabilistic decisions in CI?
+8. What failure patterns appear after millions of production requests?
+
+Those answers will matter more than launch benchmarks.
+
+## Final Thoughts
+
+TypeSafe AI's most interesting idea isn't that Jev is faster than an LLM.
+
+It's the question underneath the product:
+
+> **Why are we generating language when the application only needs a decision?**
+
+LLMs are incredibly useful because strings are universal.
+
+They can write, reason, explain, code, summarize, and converse.
+
+But that flexibility has a cost.
+
+If my application only needs:
+
+```text
+billing
+0.97 confidence
+```
+
+generating a miniature conversation to arrive there feels increasingly unnecessary.
+
+Jev proposes another abstraction:
+
+```text
+State
+  ↓
+Decision
+  ↓
+Probability
+  ↓
+Code
+```
+
+I don't think this replaces LLMs.
+
+I think it points toward something more interesting: **AI systems composed of specialized models, where generative models handle language and reasoning while decision models handle fast, constrained choices inside software.**
+
+For backend developers, that could be a much more useful way to think about AI.
+
+---
+
+## References
+
+- TypeSafe AI — System One Models and Jev
+- TypeSafe AI — Introducing System One Models and Jev
+- TypeSafe AI — Workflow evaluations and benchmark methodology
+- Vercel AI Gateway — TypeSafe AI Jev
+- Vercel AI SDK — `evaluate` API
